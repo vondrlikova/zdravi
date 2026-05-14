@@ -1,0 +1,497 @@
+/**
+ * Zdravotní průvodce — main app
+ *
+ * Načítá data z window.__APP_DATA__ (bundlovaná v data-bundle.js)
+ * Používá window.Storage a window.GeminiClient (definované v lib/*.js)
+ */
+
+(function() {
+
+// ============================================================
+// State
+// ============================================================
+let foodsDb = null;
+let herbsDb = null;
+let profileSeed = null;
+let timelineSeed = null;
+
+// ============================================================
+// Bootstrap
+// ============================================================
+function init() {
+  loadData();
+  setupTabs();
+  setupSettings();
+  setupDenik();
+  setupOtazka();
+  setupJidlo();
+  setupProfil();
+  initFirstRun();
+  renderEntries();
+  renderProfile();
+}
+
+function loadData() {
+  const D = window.__APP_DATA__;
+  if (!D) {
+    showError('Chyba: data-bundle.js se nenačetl. Otevři README a postupuj podle instrukcí.');
+    return;
+  }
+  foodsDb = D.foods;
+  herbsDb = D.herbs;
+  profileSeed = D.profile;
+  timelineSeed = D.timeline;
+
+  // First run: seed profile and timeline
+  if (!Storage.getProfile()) Storage.setProfile(profileSeed);
+  if (!Storage.getTimeline().length) Storage.setTimeline(timelineSeed.events);
+}
+
+// ============================================================
+// First run modal
+// ============================================================
+function initFirstRun() {
+  if (!Storage.getApiKey()) {
+    openSettings();
+  }
+}
+
+// ============================================================
+// Tabs
+// ============================================================
+function setupTabs() {
+  const tabs = document.querySelectorAll('nav.tabs button');
+  const panels = document.querySelectorAll('.tab-panel');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+// ============================================================
+// Settings modal
+// ============================================================
+function setupSettings() {
+  document.getElementById('btn-settings').addEventListener('click', openSettings);
+  document.getElementById('btn-cancel-settings').addEventListener('click', closeSettings);
+  document.getElementById('btn-save-settings').addEventListener('click', saveSettings);
+}
+
+function openSettings() {
+  document.getElementById('api-key').value = Storage.getApiKey() || '';
+  document.getElementById('api-model').value = Storage.getModel();
+  document.getElementById('modal-settings').classList.add('active');
+}
+
+function closeSettings() {
+  document.getElementById('modal-settings').classList.remove('active');
+}
+
+function saveSettings() {
+  const key = document.getElementById('api-key').value.trim();
+  const model = document.getElementById('api-model').value;
+  if (!key) {
+    alert('API klíč nesmí být prázdný.');
+    return;
+  }
+  Storage.setApiKey(key);
+  Storage.setModel(model);
+  closeSettings();
+}
+
+// ============================================================
+// AI helper
+// ============================================================
+async function callAI(userPrompt, taskPrompt = null) {
+  const apiKey = Storage.getApiKey();
+  if (!apiKey) {
+    openSettings();
+    throw new Error('Zadej nejdřív API klíč v nastavení.');
+  }
+  const client = new GeminiClient(apiKey, Storage.getModel());
+  const profile = Storage.getProfile();
+  const entries = Storage.getEntries();
+  const systemPrompt = buildSystemPrompt({
+    profile,
+    recentEntries: entries,
+    foodsDb,
+    herbsDb
+  });
+  const fullUserPrompt = taskPrompt ? `${taskPrompt}\n\n---\n\n${userPrompt}` : userPrompt;
+  const text = await client.generate(
+    [{ role: 'user', text: fullUserPrompt }],
+    systemPrompt,
+    { temperature: 0.55, maxOutputTokens: 4096 }
+  );
+  return text;
+}
+
+// ============================================================
+// Markdown-to-HTML (jednoduché, dostatečné pro naše potřeby)
+// ============================================================
+function renderMarkdown(text) {
+  if (!text) return '';
+  let html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+  html = html.replace(/(Možný návrh|Hypotéza|Domněnka):/g, '<span class="tag tag-suggestion">návrh</span>');
+
+  html = html.replace(/^[\-•] (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
+
+  html = html.split(/\n{2,}/).map(block => {
+    if (block.startsWith('<') || block.trim() === '') return block;
+    return `<p>${block.replace(/\n/g, '<br>')}</p>`;
+  }).join('\n');
+
+  return html;
+}
+
+// ============================================================
+// Deník
+// ============================================================
+function setupDenik() {
+  document.getElementById('btn-save-entry').addEventListener('click', saveDenikEntry);
+}
+
+function saveDenikEntry() {
+  const nalada = document.getElementById('denik-nalada').value.trim();
+  const jidlo = document.getElementById('denik-jidlo').value.trim();
+  const priznaky = document.getElementById('denik-priznaky').value.trim();
+
+  if (!nalada && !jidlo && !priznaky) {
+    alert('Záznam je prázdný.');
+    return;
+  }
+
+  const entry = {
+    id: Date.now().toString(),
+    date: new Date().toISOString(),
+    nalada,
+    jidlo,
+    priznaky
+  };
+
+  Storage.addEntry(entry);
+
+  document.getElementById('denik-nalada').value = '';
+  document.getElementById('denik-jidlo').value = '';
+  document.getElementById('denik-priznaky').value = '';
+
+  renderEntries();
+}
+
+function renderEntries() {
+  const entries = Storage.getEntries();
+  const list = document.getElementById('denik-list');
+  if (!entries.length) {
+    list.innerHTML = `<div class="empty">
+      <div class="empty-icon">📓</div>
+      <p>Zatím tu nic není. Uložte první záznam výše.</p>
+    </div>`;
+    return;
+  }
+  list.innerHTML = entries.slice(0, 20).map(e => {
+    const d = new Date(e.date);
+    const dateStr = d.toLocaleString('cs-CZ', { dateStyle: 'medium', timeStyle: 'short' });
+    return `
+      <div class="card">
+        <div class="card-header">
+          <strong>${escapeHtml(e.nalada) || '(bez popisu nálady)'}</strong>
+          <span class="card-date">${dateStr}</span>
+        </div>
+        ${e.jidlo ? `<p class="small"><strong>Jídlo:</strong> ${escapeHtml(e.jidlo)}</p>` : ''}
+        ${e.priznaky ? `<p class="small"><strong>Příznaky:</strong> ${escapeHtml(e.priznaky)}</p>` : ''}
+        <div class="flex flex-end mt-1">
+          <button class="btn btn-secondary small" data-id="${e.id}" data-act="delete-entry">Smazat</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+  list.querySelectorAll('[data-act="delete-entry"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (confirm('Smazat tento záznam?')) {
+        Storage.deleteEntry(btn.dataset.id);
+        renderEntries();
+      }
+    });
+  });
+}
+
+// ============================================================
+// Otázka
+// ============================================================
+function setupOtazka() {
+  document.getElementById('btn-analyze').addEventListener('click', runAnalysis);
+}
+
+async function runAnalysis() {
+  const text = document.getElementById('otazka-text').value.trim();
+  if (!text) {
+    alert('Napiš svou otázku nebo problém.');
+    return;
+  }
+  const output = document.getElementById('otazka-output');
+  const btn = document.getElementById('btn-analyze');
+  output.innerHTML = '<div class="loading">Analyzuji</div>';
+  btn.disabled = true;
+  try {
+    const taskPrompt = buildAnalyzePrompt(text);
+    const response = await callAI(text, taskPrompt);
+    output.innerHTML = `<div class="card">${renderMarkdown(response)}</div>`;
+  } catch (e) {
+    output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// Jídlo & Byliny
+// ============================================================
+function setupJidlo() {
+  document.getElementById('btn-lookup').addEventListener('click', () => doLookup());
+  document.getElementById('btn-combine').addEventListener('click', doCombineCheck);
+}
+
+function findInDb(query, db, key) {
+  if (!db) return null;
+  const q = query.toLowerCase().trim();
+  return db[key].find(item =>
+    item.name.toLowerCase().includes(q) ||
+    item.id.toLowerCase().includes(q) ||
+    (item.aliases || []).some(a => a.toLowerCase().includes(q))
+  ) || null;
+}
+
+async function doLookup() {
+  const query = document.getElementById('jidlo-text').value.trim();
+  if (!query) {
+    alert('Zadej potravinu nebo bylinu.');
+    return;
+  }
+  const output = document.getElementById('jidlo-output');
+  const btn = document.getElementById('btn-lookup');
+  output.innerHTML = '<div class="loading">Vyhledávám</div>';
+  btn.disabled = true;
+  try {
+    const food = findInDb(query, foodsDb, 'foods');
+    const herb = findInDb(query, herbsDb, 'herbs');
+
+    let taskPrompt;
+    if (herb) {
+      taskPrompt = buildHerbLookupPrompt(query, Storage.getProfile(), herb);
+    } else if (food) {
+      taskPrompt = buildFoodLookupPrompt(query, Storage.getProfile(), food);
+    } else {
+      taskPrompt = buildFoodLookupPrompt(query, Storage.getProfile(), null);
+    }
+
+    const response = await callAI(query, taskPrompt);
+
+    let dbInfo = '';
+    if (food || herb) {
+      const item = food || herb;
+      dbInfo = `<div class="small muted mb-1">📚 Nalezeno v databázi: <strong>${escapeHtml(item.name)}</strong> ${item.aliases?.length ? `(${escapeHtml(item.aliases.join(', '))})` : ''}</div>`;
+    } else {
+      dbInfo = `<div class="small muted mb-1">📚 Není v lokální databázi — AI použila své obecné znalosti.</div>`;
+    }
+
+    output.innerHTML = `${dbInfo}<div class="card">${renderMarkdown(response)}</div>`;
+  } catch (e) {
+    output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function doCombineCheck() {
+  const query = document.getElementById('jidlo-text').value.trim();
+  if (!query) {
+    alert('Zadej alespoň 2 položky oddělené čárkou (např. „mléko, ovoce")');
+    return;
+  }
+  const items = query.split(/[,;]/).map(s => s.trim()).filter(Boolean);
+  if (items.length < 2) {
+    alert('Pro kontrolu kombinace zadej alespoň 2 položky oddělené čárkou.');
+    return;
+  }
+  const output = document.getElementById('jidlo-output');
+  const btn = document.getElementById('btn-combine');
+  output.innerHTML = '<div class="loading">Kontroluji kombinaci</div>';
+  btn.disabled = true;
+  try {
+    const taskPrompt = buildCombineCheckPrompt(items, Storage.getProfile());
+    const response = await callAI(items.join(' + '), taskPrompt);
+    output.innerHTML = `<div class="card">${renderMarkdown(response)}</div>`;
+  } catch (e) {
+    output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// Profil
+// ============================================================
+function setupProfil() {
+  document.getElementById('btn-edit-profile').addEventListener('click', openProfileEditor);
+  document.getElementById('btn-cancel-profile').addEventListener('click', closeProfileEditor);
+  document.getElementById('btn-save-profile').addEventListener('click', saveProfileFromEditor);
+  document.getElementById('btn-export').addEventListener('click', exportData);
+}
+
+function renderProfile() {
+  const p = Storage.getProfile();
+  const container = document.getElementById('profil-content');
+  if (!p) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">👤</div><p>Profil zatím nenastaven.</p></div>';
+    return;
+  }
+  const sections = [];
+
+  if (p.basic) {
+    sections.push(`
+      <div class="profile-section">
+        <h3>Základní</h3>
+        <div class="profile-item"><span class="key">Jméno</span><span>${escapeHtml(p.basic.name)}</span></div>
+        <div class="profile-item"><span class="key">Věk</span><span>${escapeHtml(String(p.basic.age))}</span></div>
+        <div class="profile-item"><span class="key">Lokalita</span><span>${escapeHtml(p.basic.location)}</span></div>
+      </div>
+    `);
+  }
+
+  if (p.ayurveda) {
+    const a = p.ayurveda;
+    sections.push(`
+      <div class="profile-section">
+        <h3>Ájurvéda</h3>
+        ${a.prakriti ? `<div class="profile-item"><span class="key">Prakriti</span><span>${escapeHtml(a.prakriti)}</span></div>` : ''}
+        ${a.vikriti ? `<div class="profile-item"><span class="key">Vikriti</span><span>${escapeHtml(a.vikriti)}</span></div>` : ''}
+        ${a.agni ? `<div class="profile-item"><span class="key">Agni</span><span>${escapeHtml(a.agni)}</span></div>` : ''}
+        ${a.ama ? `<div class="profile-item"><span class="key">Ama</span><span>${escapeHtml(a.ama)}</span></div>` : ''}
+      </div>
+    `);
+  }
+
+  if (p.tcm) {
+    sections.push(`
+      <div class="profile-section">
+        <h3>TCM</h3>
+        ${p.tcm.mainPattern ? `<div class="profile-item"><span class="key">Hlavní vzorec</span><span>${escapeHtml(p.tcm.mainPattern)}</span></div>` : ''}
+        ${p.tcm.secondaryPatterns ? `<p class="small mt-1">${p.tcm.secondaryPatterns.map(escapeHtml).join('<br>')}</p>` : ''}
+      </div>
+    `);
+  }
+
+  if (p.symptoms?.current?.length) {
+    sections.push(`
+      <div class="profile-section">
+        <h3>Aktuální příznaky</h3>
+        <ul>${p.symptoms.current.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
+      </div>
+    `);
+  }
+
+  if (p.redFlags?.length) {
+    sections.push(`
+      <div class="profile-section">
+        <h3>⚠️ Red flags</h3>
+        <div class="disclaimer">${p.redFlags.map(escapeHtml).join('<br><br>')}</div>
+      </div>
+    `);
+  }
+
+  if (p.currentSupplements?.haveAtHome?.length) {
+    sections.push(`
+      <div class="profile-section">
+        <h3>Doplňky doma</h3>
+        <p class="small">${p.currentSupplements.haveAtHome.map(escapeHtml).join(' • ')}</p>
+      </div>
+    `);
+  }
+
+  container.innerHTML = sections.join('');
+}
+
+function openProfileEditor() {
+  document.getElementById('profile-json').value = JSON.stringify(Storage.getProfile(), null, 2);
+  document.getElementById('modal-profile').classList.add('active');
+}
+
+function closeProfileEditor() {
+  document.getElementById('modal-profile').classList.remove('active');
+}
+
+function saveProfileFromEditor() {
+  try {
+    const p = JSON.parse(document.getElementById('profile-json').value);
+    Storage.setProfile(p);
+    closeProfileEditor();
+    renderProfile();
+  } catch (e) {
+    alert('Neplatný JSON: ' + e.message);
+  }
+}
+
+function exportData() {
+  const data = {
+    profile: Storage.getProfile(),
+    entries: Storage.getEntries(),
+    timeline: Storage.getTimeline(),
+    exportedAt: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `zdravi-export-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ============================================================
+// Utilities
+// ============================================================
+function escapeHtml(text) {
+  if (text == null) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function showError(msg) {
+  const main = document.querySelector('main');
+  if (main) {
+    main.insertAdjacentHTML('afterbegin', `<div class="disclaimer"><strong>⚠️</strong> ${escapeHtml(msg)}</div>`);
+  }
+}
+
+// Start
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+})();

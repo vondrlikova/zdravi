@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#7a8c5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Zdraví">
+  <title>Zdravotní průvodce</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+</head>
+<body>
+
+  <header>
+    <h1>🌿 Zdravotní průvodce</h1>
+    <button class="icon-btn" id="btn-settings" title="Nastavení">⚙️</button>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="denik" class="active">📓 Deník</button>
+    <button data-tab="otazka">💭 Otázka</button>
+    <button data-tab="jidlo">🥗 Jídlo & Byliny</button>
+    <button data-tab="profil">👤 Profil</button>
+  </nav>
+
+  <main>
+
+    <!-- ============ DENÍK ============ -->
+    <section id="tab-denik" class="tab-panel active">
+      <h2>Deník</h2>
+      <p class="subtitle">Jak se dnes cítíš? Co jsi jedla, pila, dělala?</p>
+
+      <div class="form-row">
+        <label for="denik-nalada">Nálada a energie (krátce)</label>
+        <input type="text" id="denik-nalada" placeholder="např. unavená, mírná migréna, oteklé oči">
+      </div>
+
+      <div class="form-row">
+        <label for="denik-jidlo">Co jsi dnes jedla a pila</label>
+        <textarea id="denik-jidlo" placeholder="ráno horká voda + ženšen, oběd jáhly s dýní, večer..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <label for="denik-priznaky">Příznaky / poznámky</label>
+        <textarea id="denik-priznaky" placeholder="bolest hlavy odpoledne, akné na čelisti se zhoršilo, ..."></textarea>
+      </div>
+
+      <button class="btn" id="btn-save-entry">Uložit záznam</button>
+
+      <h3 class="mt-2">Poslední záznamy</h3>
+      <div id="denik-list">
+        <div class="empty">
+          <div class="empty-icon">📓</div>
+          <p>Zatím tu nic není. Uložte první záznam výše.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ OTÁZKA ============ -->
+    <section id="tab-otazka" class="tab-panel">
+      <h2>Otázka</h2>
+      <p class="subtitle">Popiš svůj problém. Analyzuji ho přes ájurvédu, TCM a psychosomatiku.</p>
+
+      <div class="form-row">
+        <label for="otazka-text">Tvůj problém nebo otázka</label>
+        <textarea id="otazka-text" placeholder="např. od minulého týdne se mi vrátily migrény s aurou a oteklé oči ráno"></textarea>
+      </div>
+
+      <button class="btn" id="btn-analyze">Analyzovat</button>
+
+      <div id="otazka-output" class="mt-2"></div>
+    </section>
+
+    <!-- ============ JÍDLO & BYLINY ============ -->
+    <section id="tab-jidlo" class="tab-panel">
+      <h2>Jídlo & Byliny</h2>
+      <p class="subtitle">Zadej potravinu nebo bylinu — vlastnosti v TCM, ájurvédě a vhodnost pro tebe.</p>
+
+      <div class="form-row">
+        <input type="text" id="jidlo-text" placeholder="např. okurka, kurkuma, červená čočka, ženšen">
+      </div>
+
+      <div class="flex">
+        <button class="btn" id="btn-lookup">Vyhledat</button>
+        <button class="btn btn-secondary" id="btn-combine">Zkontrolovat kombinaci</button>
+      </div>
+
+      <p class="small muted mt-1">Tip: Pro kontrolu kombinace zadej víc položek oddělených čárkou (např. „mléko, ovoce, banán")</p>
+
+      <div id="jidlo-output" class="mt-2"></div>
+    </section>
+
+    <!-- ============ PROFIL ============ -->
+    <section id="tab-profil" class="tab-panel">
+      <h2>Můj profil</h2>
+      <p class="subtitle">Tvoje konstituce a zdravotní obraz. AI bere tyto údaje v úvahu při každé odpovědi.</p>
+      <div id="profil-content"></div>
+      <div class="flex mt-2">
+        <button class="btn btn-secondary" id="btn-edit-profile">Upravit profil</button>
+        <button class="btn btn-secondary" id="btn-export">Export dat</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ Settings modal ============ -->
+  <div class="modal-overlay" id="modal-settings">
+    <div class="modal">
+      <h2>Nastavení</h2>
+
+      <div class="form-row">
+        <label for="api-key">Gemini API klíč</label>
+        <input type="password" id="api-key" placeholder="AIzaSy...">
+        <p class="small muted mt-1">Uloží se jen u tebe v prohlížeči. Nikdy se neposílá nikam jinam než přímo do Google Gemini.</p>
+      </div>
+
+      <div class="form-row">
+        <label for="api-model">Model</label>
+        <select id="api-model" style="width:100%;padding:.75rem;border:1px solid var(--border);border-radius:8px;background:var(--bg-elevated);color:var(--text);font-family:inherit;font-size:1rem;">
+          <option value="gemini-2.0-flash">Gemini 2.0 Flash (rychlý, doporučeno)</option>
+          <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash Experimental</option>
+          <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+          <option value="gemini-1.5-pro">Gemini 1.5 Pro (chytřejší, pomalejší)</option>
+        </select>
+      </div>
+
+      <div class="disclaimer">
+        <strong>⚠️ Upozornění:</strong> Tato aplikace není náhrada lékaře. U vážných příznaků (silné migrény, abnormální menstruace) konzultuj lékaře.
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="btn-cancel-settings">Zrušit</button>
+        <button class="btn" id="btn-save-settings">Uložit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Edit profile modal ============ -->
+  <div class="modal-overlay" id="modal-profile">
+    <div class="modal">
+      <h2>Upravit profil</h2>
+      <p class="subtitle">JSON editor — zatím takhle. Později uděláme hezčí formulář.</p>
+      <textarea id="profile-json" style="min-height:400px;font-family:monospace;font-size:.85rem;"></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="btn-cancel-profile">Zrušit</button>
+        <button class="btn" id="btn-save-profile">Uložit</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data-bundle.js"></script>
+  <script src="lib/storage.js"></script>
+  <script src="lib/gemini.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

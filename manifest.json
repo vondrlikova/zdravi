@@ -1,0 +1,19 @@
+{
+  "name": "Zdravotní průvodce — Zuzana",
+  "short_name": "Zdraví",
+  "description": "Osobní PWA propojující ájurvédu, TCM a psychosomatiku",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a1a1a",
+  "theme_color": "#7a8c5c",
+  "lang": "cs",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
