@@ -14,6 +14,7 @@ let foodsDb = null;
 let herbsDb = null;
 let profileSeed = null;
 let timelineSeed = null;
+let shortcutsDb = null;
 
 // ============================================================
 // Bootstrap
@@ -22,13 +23,41 @@ function init() {
   loadData();
   setupTabs();
   setupSettings();
+  setupBackButton();
   setupDenik();
   setupOtazka();
   setupJidlo();
+  setupZkratky();
   setupProfil();
   initFirstRun();
   renderEntries();
   renderProfile();
+  renderShortcuts();
+}
+
+// ============================================================
+// Back button — clears output and scrolls to top
+// ============================================================
+function setupBackButton() {
+  document.getElementById('btn-back').addEventListener('click', goBack);
+}
+
+function goBack() {
+  ['otazka-output', 'jidlo-output', 'zkratky-output'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '';
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateBackButton();
+}
+
+function updateBackButton() {
+  const hasOutput = ['otazka-output', 'jidlo-output', 'zkratky-output'].some(id => {
+    const el = document.getElementById(id);
+    return el && el.innerHTML.trim().length > 0;
+  });
+  const btn = document.getElementById('btn-back');
+  if (btn) btn.style.visibility = hasOutput ? 'visible' : 'hidden';
 }
 
 function loadData() {
@@ -41,6 +70,7 @@ function loadData() {
   herbsDb = D.herbs;
   profileSeed = D.profile;
   timelineSeed = D.timeline;
+  shortcutsDb = D.shortcuts;
 
   // First run: seed profile and timeline
   if (!Storage.getProfile()) Storage.setProfile(profileSeed);
@@ -252,6 +282,7 @@ async function runAnalysis() {
   const btn = document.getElementById('btn-analyze');
   output.innerHTML = '<div class="loading">Analyzuji</div>';
   btn.disabled = true;
+  updateBackButton();
   try {
     const taskPrompt = buildAnalyzePrompt(text);
     const response = await callAI(text, taskPrompt);
@@ -260,6 +291,7 @@ async function runAnalysis() {
     output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
   } finally {
     btn.disabled = false;
+    updateBackButton();
   }
 }
 
@@ -291,6 +323,7 @@ async function doLookup() {
   const btn = document.getElementById('btn-lookup');
   output.innerHTML = '<div class="loading">Vyhledávám</div>';
   btn.disabled = true;
+  updateBackButton();
   try {
     const food = findInDb(query, foodsDb, 'foods');
     const herb = findInDb(query, herbsDb, 'herbs');
@@ -319,6 +352,7 @@ async function doLookup() {
     output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
   } finally {
     btn.disabled = false;
+    updateBackButton();
   }
 }
 
@@ -337,6 +371,7 @@ async function doCombineCheck() {
   const btn = document.getElementById('btn-combine');
   output.innerHTML = '<div class="loading">Kontroluji kombinaci</div>';
   btn.disabled = true;
+  updateBackButton();
   try {
     const taskPrompt = buildCombineCheckPrompt(items, Storage.getProfile());
     const response = await callAI(items.join(' + '), taskPrompt);
@@ -345,7 +380,135 @@ async function doCombineCheck() {
     output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
   } finally {
     btn.disabled = false;
+    updateBackButton();
   }
+}
+
+// ============================================================
+// Zkratky
+// ============================================================
+function setupZkratky() {
+  document.getElementById('btn-save-zkratka').addEventListener('click', saveCustomShortcut);
+}
+
+function renderShortcuts() {
+  const builtinEl = document.getElementById('zkratky-vestavene');
+  const customEl = document.getElementById('zkratky-vlastni');
+
+  const builtin = shortcutsDb?.builtin || [];
+  const custom = Storage.getCustomShortcuts();
+
+  builtinEl.innerHTML = builtin.map(s => renderShortcutCard(s, false)).join('');
+
+  if (custom.length === 0) {
+    customEl.innerHTML = `<p class="muted small">Zatím žádné vlastní. Přidej si vlastní zkratku níže.</p>`;
+  } else {
+    customEl.innerHTML = custom.map(s => renderShortcutCard(s, true)).join('');
+  }
+
+  // Bind click handlers
+  document.querySelectorAll('[data-shortcut-id]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      // Don't trigger if delete button was clicked
+      if (e.target.closest('[data-act="delete-shortcut"]')) return;
+      const id = el.dataset.shortcutId;
+      const isCustom = el.dataset.custom === 'true';
+      runShortcut(id, isCustom);
+    });
+  });
+
+  document.querySelectorAll('[data-act="delete-shortcut"]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.id;
+      if (confirm('Smazat tuto zkratku?')) {
+        Storage.deleteCustomShortcut(id);
+        renderShortcuts();
+      }
+    });
+  });
+}
+
+function renderShortcutCard(s, isCustom) {
+  const deleteBtn = isCustom
+    ? `<button class="icon-btn" data-act="delete-shortcut" data-id="${escapeHtml(s.id)}" title="Smazat" style="font-size:1rem;padding:.15rem .4rem;">🗑</button>`
+    : '';
+  return `
+    <div class="card shortcut-card" data-shortcut-id="${escapeHtml(s.id)}" data-custom="${isCustom}" style="cursor:pointer;transition:transform .1s,box-shadow .1s;">
+      <div class="card-header">
+        <strong style="font-size:1.05rem;">${escapeHtml(s.icon || '⚡')} ${escapeHtml(s.title)}</strong>
+        ${deleteBtn}
+      </div>
+      ${s.description ? `<p class="small muted" style="margin:0;">${escapeHtml(s.description)}</p>` : ''}
+    </div>
+  `;
+}
+
+async function runShortcut(id, isCustom) {
+  const source = isCustom ? Storage.getCustomShortcuts() : (shortcutsDb?.builtin || []);
+  const shortcut = source.find(s => s.id === id);
+  if (!shortcut) {
+    alert('Zkratka nenalezena.');
+    return;
+  }
+
+  const output = document.getElementById('zkratky-output');
+  output.innerHTML = `<div class="card"><div class="loading">Zpracovávám "${escapeHtml(shortcut.title)}"</div></div>`;
+  output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  updateBackButton();
+
+  try {
+    const response = await callAI(shortcut.prompt);
+    output.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <strong>${escapeHtml(shortcut.icon || '⚡')} ${escapeHtml(shortcut.title)}</strong>
+          <span class="card-date">${new Date().toLocaleString('cs-CZ', { dateStyle: 'short', timeStyle: 'short' })}</span>
+        </div>
+        ${renderMarkdown(response)}
+      </div>
+    `;
+  } catch (e) {
+    output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
+  } finally {
+    updateBackButton();
+  }
+}
+
+function saveCustomShortcut() {
+  const icon = document.getElementById('zkratka-icon').value.trim() || '⚡';
+  const title = document.getElementById('zkratka-title').value.trim();
+  const description = document.getElementById('zkratka-desc').value.trim();
+  const prompt = document.getElementById('zkratka-prompt').value.trim();
+
+  if (!title) {
+    alert('Zadej název zkratky.');
+    return;
+  }
+  if (!prompt) {
+    alert('Zadej prompt (co má AI dělat).');
+    return;
+  }
+
+  const shortcut = {
+    id: 'custom-' + Date.now(),
+    icon,
+    title,
+    description,
+    prompt,
+    createdAt: new Date().toISOString()
+  };
+
+  Storage.addCustomShortcut(shortcut);
+
+  // Clear form
+  document.getElementById('zkratka-icon').value = '';
+  document.getElementById('zkratka-title').value = '';
+  document.getElementById('zkratka-desc').value = '';
+  document.getElementById('zkratka-prompt').value = '';
+
+  renderShortcuts();
+  alert('Zkratka uložena. ✓');
 }
 
 // ============================================================

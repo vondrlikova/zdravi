@@ -438,6 +438,40 @@ button.btn-danger {
   color: var(--text-soft);
 }
 
+/* Shortcut cards — clickable */
+.shortcut-card {
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
+}
+
+.shortcut-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px var(--shadow);
+  border-color: var(--accent);
+}
+
+.shortcut-card:active {
+  transform: translateY(0);
+}
+
+details summary {
+  list-style: none;
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+details summary::before {
+  content: "▸ ";
+  transition: transform 0.15s;
+  display: inline-block;
+}
+
+details[open] summary::before {
+  content: "▾ ";
+}
+
 /* Empty state */
 .empty {
   text-align: center;

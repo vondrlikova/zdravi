@@ -5,10 +5,11 @@ $ErrorActionPreference = 'Stop'
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptDir
 
-$foods    = Get-Content -Path "data\foods.json"        -Raw -Encoding UTF8
-$herbs    = Get-Content -Path "data\herbs.json"        -Raw -Encoding UTF8
-$profile  = Get-Content -Path "data\profile-seed.json" -Raw -Encoding UTF8
-$timeline = Get-Content -Path "data\timeline-seed.json" -Raw -Encoding UTF8
+$foods     = Get-Content -Path "data\foods.json"         -Raw -Encoding UTF8
+$herbs     = Get-Content -Path "data\herbs.json"         -Raw -Encoding UTF8
+$profile   = Get-Content -Path "data\profile-seed.json"  -Raw -Encoding UTF8
+$timeline  = Get-Content -Path "data\timeline-seed.json" -Raw -Encoding UTF8
+$shortcuts = Get-Content -Path "data\shortcuts.json"     -Raw -Encoding UTF8
 
 $bundle = @"
 // Auto-generated data bundle - combines all data/*.json into globals
@@ -17,7 +18,8 @@ window.__APP_DATA__ = {
   foods: $foods,
   herbs: $herbs,
   profile: $profile,
-  timeline: $timeline
+  timeline: $timeline,
+  shortcuts: $shortcuts
 };
 "@
 

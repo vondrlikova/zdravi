@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "source": "Konverzace s Gemini — 5/2026",
+  "events": [
+    {
+      "date": "20+ let zpět (cca 2004)",
+      "type": "historical",
+      "title": "Anorexie",
+      "notes": "Trápení hlady, strach z jídla. Když jedla, jen ovoce a zelenina jako 'bezpečné'. Trauma kolem výživy přetrvává — strach z hladu, tendence rychle se přejídat."
+    },
+    {
+      "date": "Od 20 let (cca 22 let)",
+      "type": "historical",
+      "title": "Převážně syrová a studená strava",
+      "notes": "Dlouhodobé ochlazování organismu. Slabý vnitřní oheň (Ming Men). Dlouhotrvající 'zalévání' Sleziny chladem a vlhkostí."
+    },
+    {
+      "date": "Od 23 let",
+      "type": "symptom",
+      "title": "Bolestivé přeskakování kloubů na nohou",
+      "notes": "Periodicky se objevuje. V TCM: deficit krve a tekutin v dráze Jater → šlachy ztrácejí pružnost."
+    },
+    {
+      "date": "Před cca 2 lety (odhad)",
+      "type": "intervention",
+      "title": "Měsíční očista — rýže basmati + mungo dal",
+      "outcome": "Hubnutí, dočasné zmírnění otoků. Po měsíci se nafouklost vrátila — tělo se očistilo, ale nedoplnilo Qi. Slabá Slezina po návratu k běžné stravě znovu nezvládla.",
+      "notes": "Lekce: detoxikace bez výživy = další oslabení."
+    },
+    {
+      "date": "Po té očistě",
+      "type": "symptom",
+      "title": "Ekzém — poprvé v životě",
+      "duration": "14 dní + dosah 3 týdny",
+      "notes": "Bolestivý, vyčerpávající. Souběh: psychické vytížení + očista vytlačila Vlhkou Horkost na povrch. Játra a Slezina to nezvládly vyloučit jiným způsobem."
+    },
+    {
+      "date": "Asi 6 měsíců zpět",
+      "type": "lifestyle",
+      "title": "Pravidelná konzumace Cocofiru ve velkém",
+      "notes": "Práce pro Wild & Coco — snadný přístup. Kokos + cukr v produktech → vznik akné na čelisti, krku, pod ušima. Lymfa stagnuje, podporuje rosolovitost a celulitidu."
+    },
+    {
+      "date": "Posledních pár měsíců",
+      "type": "symptom",
+      "title": "Akné poprvé v životě",
+      "notes": "Hlavně čelist, krk pod ušima (lymfatická oblast), kolem vlasů. Klasický znak Vlhké Horkosti vytlačené na povrch + ucpané lymfy."
+    },
+    {
+      "date": "Aktuálně (5/2026)",
+      "type": "symptom",
+      "title": "Vystouplé pihy a milia",
+      "notes": "Stávající pihy vystupují, nové se tvoří hlavně po těle. Bílá milia na obličeji. V TCM: hlen 'ztuhlý horkem'."
+    },
+    {
+      "date": "Aktuálně (5/2026)",
+      "type": "symptom",
+      "title": "Šediny v pravém spánku",
+      "notes": "Pouze vpravo. Dráha Žlučníku — přetížení Jater pracovním stresem, vysušení krve v této dráze."
+    },
+    {
+      "date": "Aktuálně (5/2026)",
+      "type": "symptom",
+      "title": "Migrény s vizuální aurou",
+      "notes": "Mžitky, obrazce před očima, ztráta zraku. Vždy spojené s pracovním přetížením a analýzou v hlavě. ⚠️ POŽADUJE NEUROLOGICKÉ VYŠETŘENÍ — vyloučit organickou příčinu."
+    },
+    {
+      "date": "Aktuálně (5/2026)",
+      "type": "symptom",
+      "title": "Předčasná menstruace po 14 dnech",
+      "notes": "Doufá, že to byla výjimka. ⚠️ POŽADUJE GYNEKOLOGICKÝ CHECK-UP + krevní obraz, štítná žláza."
+    },
+    {
+      "date": "Aktuálně (5/2026)",
+      "type": "intervention",
+      "title": "Pokus o olivový list — tinktura",
+      "outcome": "2 dny migrény a vyčerpání (Herxheimerova reakce).",
+      "notes": "Tělo extrémně citlivé na agresivní detoxikační byliny. Vysazeno. Lekce: nejdřív vyživit a otevřít odtoky, pak teprve čistit."
+    },
+    {
+      "date": "Aktuálně (5/2026)",
+      "type": "plan",
+      "title": "Strategie 'Restart esence a trávení'",
+      "notes": "Slzovka + Polyporus + Coriolus = vypustit vlhkost / Sardinky + Shilajit + Černý sezam = obnovit minerály a esenci / Ženšen + Cordyceps + jáhly = zahřát a posílit Slezinu / Reishi večer + odpočinek = zklidnit Játra a analytickou mysl."
+    },
+    {
+      "date": "Aktuálně (5/2026)",
+      "type": "habit-positive",
+      "title": "Ranní horká voda",
+      "notes": "Začala asi měsíc zpět. Pokračovat. 'Propláchnutí ranní rosy' — neuhašuje trávicí oheň."
+    },
+    {
+      "date": "Aktuálně (5/2026)",
+      "type": "habit-positive",
+      "title": "Pohyb",
+      "notes": "20 min ranní cvičení + chůze do/z práce + odpolední procházka. Pro její konstituci ideální (jemný, vytrvalý). Nezvyšovat intenzitu."
+    },
+    {
+      "date": "Aktuálně (5/2026)",
+      "type": "habit-positive",
+      "title": "Denní suchá lymfatická masáž",
+      "notes": "Správným směrem (od třísel → stehna → lýtka). Vynikající podpora pro odtok vlhkosti z podkoží."
+    }
+  ]
+}

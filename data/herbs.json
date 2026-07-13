@@ -1,0 +1,527 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-05-11",
+  "notes": "Základní knihovna bylin pro start. Zdroje: Charaka Samhita, Ashtanga Hridaya, Bhavaprakasha (ájurvéda); Bensky-Materia Medica, Maciocia 'Foundations' (TCM); Madaus 'Lehrbuch der biologischen Heilmittel', Treben (evropské); PubMed pro recentní studie. Bylinné interakce s léky doloženy z NIH Office of Dietary Supplements a Memorial Sloan Kettering Cancer Center 'About Herbs'.",
+  "herbs": [
+
+    {
+      "id": "ashwagandha",
+      "name": "Ašvaganda",
+      "aliases": ["Withania somnifera", "Indian Ginseng", "ashwagandha"],
+      "category": "adaptogen, rasayana",
+      "ayurveda": {
+        "rasa": "hořká, svíravá, sladká",
+        "virya": "zahřívací",
+        "vipaka": "sladká",
+        "doshicEffect": "Vata --, Kapha mírně + (mastná), Pitta + (s mírou)",
+        "actions": "rasayana, balya (silová), medhya (kognice), vajikarana (libido)",
+        "qualities": "těžká, mastná"
+      },
+      "tcm": {
+        "thermalNature": "teplá",
+        "actions": "tonizuje Qi a Yang, zklidňuje Shen (ducha)"
+      },
+      "modern": "Standardizované extrakty (KSM-66, Sensoril) — studie potvrzují snížení kortizolu, zlepšení spánku, podporu štítné žlázy, snížení úzkosti. Velmi dobře tolerována.",
+      "indications": "chronický stres, úzkost, nespavost, vyčerpání, slabost imunity, mírná hypothyreóza",
+      "contraindications": [
+        "hyperthyreóza (může zhoršit)",
+        "autoimunita s aktivním zánětem (opatrnost — modifikuje imunitu)",
+        "akutní horko / horečka",
+        "těhotenství (klasicky kontraindikováno, recentní studie smíšené)"
+      ],
+      "interactions": [
+        "sedativa a benzodiazepiny — potenciace",
+        "imunosupresiva — antagonismus",
+        "levothyroxin (Euthyrox, Letrox) — může zvýšit T3/T4 → konzultovat s lékařem",
+        "antidiabetika — může zesílit účinek"
+      ],
+      "dosage": "300-600 mg standardizovaného extraktu denně, nejlépe večer v teplém mléce/vodě s ghí",
+      "forHer": {
+        "rating": "doporučeno (později)",
+        "reasoning": "Pro její analytickou hlavu, stres, vyčerpání — ideální. Ale: doporučeno odložit, dokud nezapojí Reishi a Slzovku. Až tělo začne reagovat, pak ašvaganda večer. ⚠️ Vzhledem k riziku hypothyreózy (vypadávání obočí) potřebuje nejdřív vyšetření štítné žlázy — pokud bude hypotyreóza, ašvaganda OK, pokud hyper, NE."
+      },
+      "sources": ["Charaka Samhita Cikitsasthana", "Bhavaprakasha", "Mishra et al. 2000", "Lopresti et al. 2019 (KSM-66 trial)"]
+    },
+
+    {
+      "id": "ginseng-korean-red",
+      "name": "Ženšen pravý (korejský červený)",
+      "aliases": ["Panax ginseng", "Ren Shen", "Korean Red Ginseng"],
+      "category": "adaptogen, tonikum Qi",
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "sladká, lehce hořká",
+        "organs": ["Slezina", "Plíce", "Srdce"],
+        "actions": "silně tonizuje Yuan Qi (původní energii), tonizuje Slezinu a Plíce, vyživuje krev, zklidňuje Shen"
+      },
+      "ayurveda": {
+        "doshicEffect": "Vata --, Kapha -, Pitta + (zahřívací)"
+      },
+      "modern": "Ginsenosidy (Rg1, Rb1, Rd ad.). Fermentace zvyšuje biodostupnost. Studie: kognitivní výkon, únava, imunita, antioxidační efekt.",
+      "indications": "vyčerpání, slabá imunita, kognitivní pokles, slabost po nemoci, neplodnost z deficitu",
+      "contraindications": [
+        "akutní horko nebo zánět",
+        "vysoký krevní tlak nekontrolovaný",
+        "akutní úzkost s palpitacemi (může zhoršit)",
+        "estrogen-senzitivní nádory (kontroverzní, raději opatrně)"
+      ],
+      "interactions": [
+        "warfarin — může snížit INR (klinicky doloženo)",
+        "SSRI / MAOi — riziko serotoninového syndromu (mírné)",
+        "stimulanty + kofein — potenciace, nervozita",
+        "antidiabetika — zesílení (sledovat glykémii)",
+        "imunosupresiva — antagonismus"
+      ],
+      "dosage": "fermentovaný extrakt: 1-2 g denně; sušený kořen v odvaru: 3-5 g; po jídle, dopoledne",
+      "forHer": {
+        "rating": "klíčové",
+        "reasoning": "Přímo na deficit Qi Sleziny + vyčerpání + 'zestárnutí'. Volit fermentovaný (Lavivant — Korean Red Ginseng) nebo řezaný kořen (Vital Country, 6-letý). Brát s jídlem (nejlépe poledne), nikdy nalačno. Začít s menší dávkou kvůli kávě."
+      },
+      "sources": ["Shen Nong Ben Cao Jing", "Bensky-Materia Medica", "Park et al. 2014 (red ginseng meta-analysis)"]
+    },
+
+    {
+      "id": "schisandra",
+      "name": "Schisandra (klanopraška čínská)",
+      "aliases": ["Schisandra chinensis", "Wu Wei Zi", "ovoce pěti chutí"],
+      "category": "adaptogen, tonikum Yin",
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "kyselá (dominantní), s prvky všech pěti chutí",
+        "organs": ["Plíce", "Ledviny", "Srdce"],
+        "actions": "uzamyká unikající Qi a tekutiny, vyživuje Yin Ledvin, zklidňuje Shen, posiluje krev Jater"
+      },
+      "modern": "Schizandriny (A, B, C). Studie: hepatoprotekce, kognitivní výkon, snížení úzkosti, podpora detoxikace Jater fáze II.",
+      "indications": "vyčerpání s úniky (pocení, výtoky, předčasná menstruace), chronická únava, podráždění Jater, oslabená paměť",
+      "contraindications": [
+        "akutní povrchový syndrom (přechlazení)",
+        "akutní žaludeční vřed (kyselá)",
+        "těhotenství (klasicky NE)",
+        "vysoký intrakraniální tlak"
+      ],
+      "interactions": [
+        "warfarin — opatrnost",
+        "tacrolimus, cyklosporin (silně metabolizovány CYP3A4) — schizandra inhibuje, riziko toxicity",
+        "léky metabolizované CYP3A4 obecně — sledovat"
+      ],
+      "dosage": "tinktura 1:1 = 5-10 kapek 2x denně; 1:5 = 20-30 kapek; sušené plody 3-6 g v odvaru",
+      "forHer": {
+        "rating": "dobrá",
+        "reasoning": "Pro její profil ideální 'uzamykač' — pomůže s předčasnou menstruací, výtokem, suchou pletí (uzamyká vodu v tkáních). Ale POZOR: kyselost! Nedávat kapky přímo do úst, vždy zředit v 100 ml vlažné vody, po vypití propláchnout zuby (mizející sklovina). Tinktura 1:1 = silná, začít s 5-8 kapkami."
+      },
+      "sources": ["Shen Nong Ben Cao Jing", "Bensky-Materia Medica", "Panossian & Wikman 2008"]
+    },
+
+    {
+      "id": "reishi",
+      "name": "Reishi (lesklokorka lesklá)",
+      "aliases": ["Ganoderma lucidum", "Ling Zhi"],
+      "category": "medicinální houba, tonikum Shen",
+      "tcm": {
+        "thermalNature": "neutrální",
+        "taste": "sladká",
+        "organs": ["Srdce", "Játra", "Plíce"],
+        "actions": "zklidňuje Shen (ducha), tonizuje Qi a krev, podporuje imunitu"
+      },
+      "modern": "Triterpeny (ganodermové kyseliny), beta-glukany. Studie: imunomodulace, hepatoprotekce, mírný sedativní efekt, antialergický.",
+      "indications": "nespavost, neklid, úzkost, alergie, slabá imunita, podpora po chemoterapii",
+      "contraindications": [
+        "antikoagulace (mírná antitrombotická aktivita) — opatrnost před operací (2 týdny předem vysadit)",
+        "imunosupresiva — antagonismus",
+        "transplantace orgánů"
+      ],
+      "interactions": [
+        "warfarin a antikoagulancia — synergie, riziko krvácení",
+        "imunosupresiva — antagonismus"
+      ],
+      "dosage": "extrakt 1-3 g denně, nejlépe večer; jako součást 'mushroom blend' lépe",
+      "forHer": {
+        "rating": "klíčové",
+        "reasoning": "Přímo cílí na její 'analytickou hlavu' a stres. Večer 1-2 kapsle (Superionherbs) hodinu před spaním. Pomůže usnout, regenerovat krev, uklidnit Játra → menší tlak v hlavě → méně migrén."
+      },
+      "sources": ["Shen Nong Ben Cao Jing", "Bensky-Materia Medica", "Wachtel-Galor et al. 2011"]
+    },
+
+    {
+      "id": "cordyceps",
+      "name": "Cordyceps (housenice)",
+      "aliases": ["Cordyceps sinensis / militaris", "Dong Chong Xia Cao"],
+      "category": "medicinální houba, tonikum Yang Ledvin",
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "sladká",
+        "organs": ["Plíce", "Ledviny"],
+        "actions": "tonizuje Yang Ledvin a Yin současně (vzácné!), posiluje Plíce, zvyšuje energii a vytrvalost"
+      },
+      "modern": "Kordycepin, polysacharidy. Studie: zvýšení VO2max, sexuální funkce, imunita, ATP produkce.",
+      "indications": "chronická únava, slabost po nemoci, plicní slabost, snížené libido, sportovní výkonnost",
+      "contraindications": [
+        "autoimunita s aktivním vzplanutím (modifikuje imunitu)",
+        "antikoagulace (mírná interakce)",
+        "akutní bakteriální infekce s horkem"
+      ],
+      "interactions": [
+        "imunosupresiva — antagonismus",
+        "antikoagulancia — opatrnost",
+        "antidiabetika — mírná synergie"
+      ],
+      "dosage": "extrakt s ≥30 % polysacharidů: 1-3 g denně, nejlépe ráno; ne večer (může bránit spánku)",
+      "forHer": {
+        "rating": "klíčové",
+        "reasoning": "Pro únavu + 'těžké nohy' (deficit Yang Ledvin) — ideální. Ráno + dopoledne s Coriolusem. Po horké vodě. Nebrat večer."
+      }
+    },
+
+    {
+      "id": "coriolus",
+      "name": "Coriolus (outkovka pestrá)",
+      "aliases": ["Trametes versicolor", "Yun Zhi", "turkey tail"],
+      "category": "medicinální houba",
+      "tcm": {
+        "thermalNature": "neutrální až chladivá",
+        "actions": "čistí toxiny a vlhkou horkost, podporuje imunitu, podporuje Slezinu"
+      },
+      "modern": "PSK, PSP (polysacharidové peptidy). Schválené v Japonsku jako podpora při onkologické léčbě. Studie: imunomodulace, podpora mikrobiomu.",
+      "indications": "lymfatická stagnace, chronické infekce, podpora imunity, dysbióza, kožní výrůstky",
+      "contraindications": ["aktivní imunosuprese", "transplantace"],
+      "interactions": ["imunosupresiva — antagonismus"],
+      "dosage": "extrakt: 1-3 g denně",
+      "forHer": {
+        "rating": "klíčové",
+        "reasoning": "Cílí na její lymfu, akné, vystouplé útvary, výtok. 2-3 kapsle dopoledne (Superionherbs)."
+      }
+    },
+
+    {
+      "id": "polyporus",
+      "name": "Polyporus (choroš oříšatý)",
+      "aliases": ["Polyporus umbellatus", "Zhu Ling"],
+      "category": "medicinální houba, odvádí vlhkost",
+      "tcm": {
+        "thermalNature": "neutrální",
+        "taste": "sladká, fádní",
+        "organs": ["Ledviny", "Močový měchýř"],
+        "actions": "silně odvádí vlhkost přes ledviny, jemně chladí"
+      },
+      "modern": "Triterpeny, polysacharidy. Diuretický efekt podpořený studiemi.",
+      "indications": "otoky, retence vody, mokvavé kožní léze, stagnace lymfy, časté infekce močových cest s vlhkostí",
+      "contraindications": ["dehydratace", "nadměrné močení už předtím"],
+      "interactions": ["diuretika — synergie, sledovat elektrolyty"],
+      "dosage": "1-3 g extraktu dopoledne",
+      "forHer": {
+        "rating": "klíčové",
+        "reasoning": "Specializovaný 'odvodňovač' — přesně to, co potřebuje pro otoky obličeje, celulitidu, rosolovitost. Vždy s dostatkem minerálů (Shilajit, Fytomineral) — vypouští vodu, ne minerály."
+      }
+    },
+
+    {
+      "id": "chaga",
+      "name": "Chaga (rezavec šikmý)",
+      "aliases": ["Inonotus obliquus"],
+      "category": "medicinální houba",
+      "tcm": {
+        "thermalNature": "chladivá",
+        "actions": "čistí horko a toxiny, antioxidační"
+      },
+      "modern": "Vysoký obsah ORAC antioxidantů, betulin, betulinová kyselina.",
+      "indications": "oxidativní stres, podpora imunity (u Pitta převahy), zánětlivé záněty s horkem",
+      "contraindications": ["antikoagulace", "ledvinné kameny (oxaláty!)", "deficit Yang / vnitřní chlad"],
+      "interactions": ["warfarin", "antidiabetika"],
+      "forHer": {
+        "rating": "vyhnout se (teď)",
+        "reasoning": "Pro Zuzanu příliš chladná. Až se posílí Yang a Slezina, lze přidat. Ne v jejím aktuálním stavu vnitřního chladu a deficitu."
+      }
+    },
+
+    {
+      "id": "olivovy-list",
+      "name": "Olivový list (tinktura, extrakt)",
+      "aliases": ["Olea europaea — listy", "olive leaf"],
+      "category": "antimikrobiální, antiparazitární",
+      "tcm": {
+        "thermalNature": "chladivá až studená",
+        "actions": "silně čistí toxické horko, antimikrobiální"
+      },
+      "modern": "Oleuropein, hydroxytyrosol. Studie: antivirové, antibakteriální, snižuje krevní tlak.",
+      "indications": "akutní virové infekce, kandidóza, podpora kardiovaskulárního systému, vysoký krevní tlak",
+      "contraindications": [
+        "hypotenze",
+        "slabý vnitřní oheň, deficit Yangu",
+        "akutní vyčerpání",
+        "ucpaná lymfa bez schopnosti vylučovat (riziko Herxheimerovy reakce!)"
+      ],
+      "interactions": [
+        "antihypertenziva — synergie, riziko hypotenze",
+        "antidiabetika — synergie",
+        "chemoterapie — opatrnost"
+      ],
+      "dosage": "tinktura 1:5 — 20-40 kapek 2-3x denně po jídle",
+      "forHer": {
+        "rating": "VYHNOUT SE (teď)",
+        "reasoning": "⚠️ Vyvolal u ní 2 dny migrény + vyčerpání (Herxheimerova reakce). Tělo nemělo kapacitu vyloučit uvolněné toxiny. Až bude tělo posílené a otevřené odtoky (po 4-6 týdnech Slzovky + výživy), pak lze opatrně zkusit. Teď NE."
+      }
+    },
+
+    {
+      "id": "kurkuma-bylina",
+      "name": "Kurkuma (jako léčivá bylina)",
+      "aliases": ["Curcuma longa", "Haridra", "Jiang Huang"],
+      "category": "léčivá bylina, koření",
+      "ayurveda": {
+        "actions": "čistí krev, podporuje Játra, protizánětlivá",
+        "doshicEffect": "tridoshic v rozumném množství"
+      },
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "pálivá, hořká",
+        "actions": "hýbe krví, rozhání stagnace"
+      },
+      "modern": "Kurkumin — silný protizánětlivý efekt. Studie u OA, deprese, IBD. Nízká vstřebatelnost — řešit lipozomálním extraktem nebo s pepřem + tukem.",
+      "indications": "chronické záněty, jaterní stagnace, krevní stagnace, kožní problémy",
+      "contraindications": ["žlučové kameny (obstrukční)", "antikoagulace ve vysokých dávkách"],
+      "interactions": [
+        "warfarin — opatrnost ve vysokých dávkách extraktů",
+        "antidiabetika — synergie",
+        "léky metabolizované CYP — extrakty mohou ovlivnit"
+      ],
+      "dosage": "čerstvá: 1-3 g denně; standardizovaný extrakt: 500-1000 mg s pepřem",
+      "forHer": {
+        "rating": "dobrá",
+        "reasoning": "Dobrá pro Játra a krev. Jíst v jídle (s tukem a pepřem), zatím ne ve formě silných extraktů."
+      }
+    },
+
+    {
+      "id": "mesicek-lekarsky",
+      "name": "Měsíček lékařský",
+      "aliases": ["Calendula officinalis"],
+      "category": "evropská bylina",
+      "tcm": {
+        "thermalNature": "mírně chladivá",
+        "actions": "čistí horko, pohybuje krví, lymfa"
+      },
+      "ayurveda": {
+        "doshicEffect": "Pitta -, Kapha -, Vata mírně +"
+      },
+      "modern": "Triterpeny, flavonoidy, karotenoidy. Studie: hojení ran, antiseptický, lymfatická podpora.",
+      "indications": "lymfatická stagnace, akné, kožní záněty, gynekologické záněty",
+      "contraindications": ["alergie na hvězdnicovité (sedmikrásky, heřmánek, ambrózie)", "těhotenství (vyšší dávky)"],
+      "dosage": "čaj: 1 lžička květu na šálek, 2-3x denně; tinktura 30-60 kapek",
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Přímo na lymfu, akné, výtok. 1-2 šálky čaje denně. Pozor — ve vyšším množství vysušuje, takže ne ve velkém."
+      }
+    },
+
+    {
+      "id": "petrzel-cervena",
+      "name": "Petržel (nať)",
+      "aliases": ["Petroselinum crispum"],
+      "category": "kuchyňská bylina, lehká léčivá",
+      "tcm": {
+        "thermalNature": "teplá",
+        "actions": "čistí Ledviny, podporuje močení, čistí krev"
+      },
+      "modern": "Vitamin K, C, vápník, železo. Apiol — diuretický.",
+      "indications": "lymfatická stagnace, otoky, ledvinová slabost",
+      "contraindications": ["těhotenství (apiol může stimulovat dělohu — VYSOKÉ dávky)", "ledvinné kameny (oxaláty)"],
+      "interactions": ["antikoagulancia (vitamin K) — opatrnost"],
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Její intuice s petrželovým čajem se solí je skvělá — dodá minerály a podpoří odtok vody. Pokračovat. Skvělá kombinace s koriandrem (čištění lymfy)."
+      }
+    },
+
+    {
+      "id": "koriandr",
+      "name": "Koriandr (nať i semínka)",
+      "aliases": ["Coriandrum sativum", "cilantro / coriander"],
+      "category": "kuchyňská bylina",
+      "tcm": {
+        "thermalNature": "neutrální až mírně chladivá",
+        "actions": "uvolňuje povrch, podporuje trávení, čistí horkost"
+      },
+      "ayurveda": {
+        "doshicEffect": "tridoshic, zvlášť dobrý pro Pitta"
+      },
+      "modern": "Studie naznačují chelataci těžkých kovů (kontroverzní, ale tradičně užívaný).",
+      "forHer": {
+        "rating": "dobrý",
+        "reasoning": "Kombinovat s petrželí — synergický efekt na lymfu. Čerstvý do polévek, dušené zeleniny."
+      }
+    },
+
+    {
+      "id": "trezalka",
+      "name": "Třezalka tečkovaná",
+      "aliases": ["Hypericum perforatum", "St. John's Wort"],
+      "category": "evropská bylina, antidepresivum",
+      "tcm": {
+        "thermalNature": "teplá",
+        "actions": "rozhání stagnaci Qi, mírní napětí, antimikrobiální"
+      },
+      "modern": "Hypericin, hyperforin. Studie: mírná až střední deprese — srovnatelná s SSRI v některých studiích.",
+      "indications": "mírná deprese, neurodermatitida, hojení ran (olej), nervové bolesti",
+      "contraindications": ["fotosenzitivita", "manie / bipolární porucha"],
+      "interactions": [
+        "⚠️ KRITICKÉ: indukuje CYP3A4, P-gp — snižuje účinek mnoha léků",
+        "antikoncepce (snížení účinku — riziko otěhotnění!)",
+        "SSRI, SNRI, MAOi — riziko serotoninového syndromu",
+        "warfarin — snížení účinku",
+        "imunosupresiva (cyklosporin, tacrolimus) — silně snižuje, riziko rejekce",
+        "antiretrovirotika — silné snížení"
+      ],
+      "dosage": "extrakt standardizovaný na 0,3 % hypericinu: 300 mg 3x denně",
+      "forHer": {
+        "rating": "opatrně / NEDOPORUČUJI",
+        "reasoning": "Pro její stres je teoreticky vhodná, ale lékové interakce jsou rozsáhlé. Pokud bere jakékoli léky (i hormonální antikoncepci), NE. Lepší volby pro ni: Reishi, Ašvaganda (po vyšetření štítné žlázy)."
+      }
+    },
+
+    {
+      "id": "kopriva",
+      "name": "Kopřiva dvoudomá",
+      "aliases": ["Urtica dioica", "nettle"],
+      "category": "evropská bylina, mineralizující",
+      "tcm": {
+        "thermalNature": "neutrální",
+        "actions": "tonizuje krev, čistí, mírně diuretická"
+      },
+      "modern": "Vápník, hořčík, železo, vitamin K, C, A. Studie: BPH, alergická rinitida, mírná hypotenzní aktivita.",
+      "indications": "anémie, alergie, BPH, retence tekutin, slabé vlasy a nehty",
+      "contraindications": ["antikoagulace (vitamin K)", "hypotenze"],
+      "dosage": "čaj z mladých listů 2-3x denně; sušená nať 1 lžička na šálek",
+      "forHer": {
+        "rating": "dobrá",
+        "reasoning": "Vynikající pro doplnění krve a minerálů — pomůže s šedinami, vlasy, sklovinou. Čaj 1-2x denně."
+      }
+    },
+
+    {
+      "id": "fennel-cha",
+      "name": "Fenykl (semínka i nať)",
+      "aliases": ["Foeniculum vulgare"],
+      "category": "koření / léčivá",
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "pálivá, sladká",
+        "organs": ["Játra", "Ledviny", "Slezina", "Žaludek"],
+        "actions": "rozhání chlad, harmonizuje Slezinu, snižuje plynatost"
+      },
+      "ayurveda": {
+        "doshicEffect": "tridoshic, zvlášť dobrý pro Pitta i Vata"
+      },
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Po jídle proti nadýmání, do kávy (už používá). Bezpečný a jemný."
+      }
+    },
+
+    {
+      "id": "tulsi",
+      "name": "Tulsí (bazalka posvátná)",
+      "aliases": ["Holy basil", "Ocimum sanctum / tenuiflorum"],
+      "category": "adaptogen, rasayana",
+      "ayurveda": {
+        "rasa": "pálivá, hořká",
+        "virya": "zahřívací",
+        "doshicEffect": "Vata mírně +, Kapha --, Pitta + (s mírou)"
+      },
+      "modern": "Eugenol, ursolová kyselina. Studie: anti-stress, snížení kortizolu, antioxidant.",
+      "indications": "stres, mírná úzkost, chronická únava, podpora imunity, dýchací cesty",
+      "contraindications": ["těhotenství (vyšší dávky)", "antikoagulace"],
+      "dosage": "čaj: 1-2 šálky denně; extrakt 300-600 mg",
+      "forHer": {
+        "rating": "dobré",
+        "reasoning": "Jemný adaptogen. Pro stres a Játra. Čaj 1-2x denně. Lépe než zelený čaj odpoledne."
+      }
+    },
+
+    {
+      "id": "triphala",
+      "name": "Trifala (Triphala)",
+      "aliases": ["Triphala"],
+      "category": "ájurvédská směs, rasayana, čištění",
+      "ayurveda": {
+        "composition": "haritaki + amalaki + bibhitaki (3 plody)",
+        "rasa": "obsahuje 5 z 6 chutí",
+        "virya": "neutrální",
+        "doshicEffect": "tridoshic — nejvyváženější ájurvédské tonikum",
+        "actions": "mírně laxativní, čistí, vyživuje, tonizuje GIT"
+      },
+      "modern": "Kombinace tří plodů má širší biochemický profil než jednotlivé. Studie: prebiotika, mikrobiom, mírná hypolipidemická aktivita.",
+      "indications": "zácpa, dysbióza, tonifikace GIT, podpora detoxikace, suchá pleť (Amalaki)",
+      "contraindications": ["průjem", "extrémní vyčerpání (může být příliš čistící)", "těhotenství (kontroverzní)"],
+      "dosage": "1/2-1 lžička prášku ve teplé vodě večer, nebo 500 mg 2x denně",
+      "forHer": {
+        "rating": "opatrně",
+        "reasoning": "Klasicky vhodná, ale: tělo je teď unavené, takže začít hodně malou dávkou (1/4 lžičky) a sledovat. Pokud zhorší rosolovitost (ama), vysadit. Lepší až po zapojení Slzovky a vyživení."
+      }
+    },
+
+    {
+      "id": "manjishtha",
+      "name": "Manjishtha (Mořena indická)",
+      "aliases": ["Rubia cordifolia"],
+      "category": "ájurvédská, čistí krev",
+      "ayurveda": {
+        "rasa": "hořká, sladká, svíravá",
+        "virya": "zahřívací",
+        "doshicEffect": "Pitta -, Kapha -, Vata +",
+        "actions": "čistí krev, lymfu, kůži; rozhání stagnaci"
+      },
+      "indications": "akné, pigmentace, lymfatická stagnace, ekzémy, menstruační stagnace",
+      "dosage": "1/4-1/2 lžičky prášku 2x denně, nebo 500 mg kapsle",
+      "forHer": {
+        "rating": "možný návrh",
+        "reasoning": "Možný návrh pro pozdější fázi (po posílení Sleziny). Cílí přesně na její akné na čelisti, vystouplé útvary, pigmentaci. Ájurvédská alternativa ke Coriolu/Měsíčku."
+      }
+    },
+
+    {
+      "id": "brahmi",
+      "name": "Brahmi (Bacopa monnieri)",
+      "aliases": ["Bacopa monnieri"],
+      "category": "ájurvédská, medhya rasayana (pro mysl)",
+      "ayurveda": {
+        "rasa": "hořká, sladká",
+        "virya": "chladivá",
+        "vipaka": "sladká",
+        "doshicEffect": "tridoshic, zvlášť dobrá pro Pitta a Vata",
+        "actions": "medhya rasayana — zklidňuje mysl, zlepšuje paměť, snižuje úzkost"
+      },
+      "modern": "Bakosidy. Studie: zlepšení paměti, snížení úzkosti (efekt po 8-12 týdnech).",
+      "indications": "úzkost, ADHD, kognitivní pokles, nespavost z přemíry myšlenek",
+      "contraindications": ["bradykardie", "obstrukce tlustého střeva"],
+      "interactions": ["sedativa — potenciace", "antiepileptika — opatrnost"],
+      "dosage": "300-600 mg standardizovaného extraktu (na 20-50 % bakosidy)",
+      "forHer": {
+        "rating": "možný návrh",
+        "reasoning": "Možný návrh pro její 'analytickou hlavu' a migrény. V kombinaci s Reishi nebo střídavě. Účinek pomalý (8+ týdnů), ale stabilní."
+      }
+    },
+
+    {
+      "id": "amalaki",
+      "name": "Amalaki (indický angrešt)",
+      "aliases": ["Phyllanthus emblica", "Amla"],
+      "category": "ájurvédská, rasayana",
+      "ayurveda": {
+        "rasa": "5 chutí (chybí pouze slaná)",
+        "virya": "chladivá",
+        "vipaka": "sladká",
+        "doshicEffect": "tridoshic — zvlášť dobrá pro Pitta",
+        "actions": "rasayana, vyživuje Yin, podporuje vlasy, zrak, pleť"
+      },
+      "modern": "Vitamin C (vysoký a stabilní), tanniny, polyfenoly. Studie: lipidy, glykémie, hojení.",
+      "indications": "stárnutí pleti, šediny, suchost, GI vředy, vysoký cholesterol",
+      "contraindications": ["těhotenství (kontroverzní)", "průjem"],
+      "dosage": "500 mg-2 g prášku denně",
+      "forHer": {
+        "rating": "dobrá",
+        "reasoning": "Pro suchou pleť, vlasy, oči. Mírně chladivá — kombinovat se zahřívacími bylinkami. Součást Trifaly. Lze brát i samostatně."
+      }
+    }
+
+  ]
+}

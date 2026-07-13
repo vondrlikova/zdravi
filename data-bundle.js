@@ -1511,5 +1511,141 @@ window.__APP_DATA__ = {
       "notes": "Správným směrem (od třísel → stehna → lýtka). Vynikající podpora pro odtok vlhkosti z podkoží."
     }
   ]
+},
+  shortcuts: {
+  "version": 1,
+  "notes": "Vestavěné zkratky. Uživatelské zkratky se ukládají zvlášť do localStorage.",
+  "builtin": [
+
+    {
+      "id": "novinky-psychosomatika",
+      "icon": "🧠",
+      "title": "Novinky v psychosomatice",
+      "description": "Aktuální výzkum a poznatky",
+      "prompt": "Udělej mi stručný přehled 3-5 nejdůležitějších poznatků nebo studií v oboru psychosomatiky z let 2023-2026, které jsou relevantní pro můj profil (deficit Sleziny, vlhká horkost, deficit Yin, analytické přetížení, historie anorexie). Ke každému bodu uveď: co říká, autor/studie, praktický důsledek pro mě. Preferuj Maté, van der Kolk, Levine, Porges, novější PNI výzkum.",
+      "category": "novinky"
+    },
+    {
+      "id": "novinky-neuroveda",
+      "icon": "🔬",
+      "title": "Novinky v neurovědě",
+      "description": "Polyvagální teorie, interocepce, emoce",
+      "prompt": "Udělej mi souhrn 3-5 recentních poznatků z neurovědy (2023-2026) v oblastech: polyvagální teorie, interocepce, konstrukční teorie emocí, osa střevo-mozek. Zaměř se na to, co je použitelné pro mě konkrétně — vzhledem k migrénám s aurou, analytickému přetížení, dysregulaci trávení a stresu.",
+      "category": "novinky"
+    },
+    {
+      "id": "novinky-tcm-ayurveda",
+      "icon": "🌿",
+      "title": "Novinky v TCM a ájurvédě",
+      "description": "Recentní výzkum bylin a přístupů",
+      "prompt": "Uveď mi 3-5 zajímavých recentních studií (2022-2026) nebo přehledů v oblasti TCM nebo ájurvédy, které jsou relevantní pro můj obraz (Slezina Qi Xu, vlhká horkost, deficit Yin). Zaměř se na byliny/formuly, které užívám (Slzovka, houby Reishi/Cordyceps/Coriolus/Polyporus, ženšen, Shilajit, Ašvaganda) a jejich vědecky potvrzené účinky.",
+      "category": "novinky"
+    },
+    {
+      "id": "analyza-deniku",
+      "icon": "📊",
+      "title": "Analýza mého deníku",
+      "description": "Co ukazují mé poslední záznamy",
+      "prompt": "Projdi mé poslední záznamy z deníku, hledej vzorce a souvislosti. Zaměř se na: opakující se příznaky, korelaci s jídlem/spánkem/stresem, trendy (zlepšuje se něco / zhoršuje?), overlooked signals (co jsem možná přehlédla). Neopakuj mi jen to, co jsem napsala — hledej vzorce. Pokud jsou záznamy stručné nebo prázdné, řekni to.",
+      "category": "analyza"
+    },
+    {
+      "id": "plan-tento-tyden",
+      "icon": "🎯",
+      "title": "Co dělat tento týden",
+      "description": "Konkrétní priority na příštích 7 dní",
+      "prompt": "Vzhledem k mému profilu a posledním záznamům v deníku mi navrhni 3-5 konkrétních věcí, na které se mám tento týden zaměřit. Buď praktická, ne obecná. Priority podle důležitosti. U každé napiš 'proč'.",
+      "category": "planovani"
+    },
+    {
+      "id": "otok-rano",
+      "icon": "💧",
+      "title": "Otok ráno — rozbor",
+      "description": "Co to znamená a co s tím",
+      "prompt": "Popiš mi hlavní příčiny ranních otoků (obličej, oči, končetiny) — z pohledu TCM, ájurvédy, moderní medicíny (ledviny, lymfa, hormonální, spánek). Vzhledem k mému profilu (deficit Sleziny, vlhkost, papiňák) — co je pravděpodobná příčina a co konkrétně udělat dnes večer, abych ráno byla méně oteklá?",
+      "category": "priznak"
+    },
+    {
+      "id": "energie-unava",
+      "icon": "⚡",
+      "title": "Energie a únava",
+      "description": "Rozbor a doporučení",
+      "prompt": "Rozbor únavy z tří úhlů (TCM, ájurvéda, neurověda/HPA osa/mitochondrie). Uveď 3-5 nejčastějších neviditelných příčin únavy u ženy 40+ s mým profilem (slabá Slezina, deficit Yin, historie anorexie). Ke každé: jak ji rozpoznám + jednoduchý test/pozorování + první krok.",
+      "category": "priznak"
+    },
+    {
+      "id": "spanek",
+      "icon": "😴",
+      "title": "Spánek — kvalita a poruchy",
+      "description": "Rozbor a rady",
+      "prompt": "Rozeber mi problémy se spánkem z pohledu TCM (které orgány probouzí v jaký čas — dráhový hodinový cyklus), ájurvédy (převažující dóša večer/v noci), neurovědy (kortizol, melatonin, glymfatický systém, cirkadiánní rytmy). Vzhledem k mému profilu — 3 konkrétní kroky pro dnešní večer.",
+      "category": "priznak"
+    },
+    {
+      "id": "menstruace",
+      "icon": "🌸",
+      "title": "Menstruace — kontext",
+      "description": "Co znamenají nepravidelnosti",
+      "prompt": "Rozbor menstruačního cyklu z pohledu TCM (krev, Játra, Ledviny, Chong Mai a Ren Mai dráhy), ájurvédy (Artava, Rakta dhatu), moderní gynekologie (perimenopauza 40+, hormonální nerovnováha, štítná žláza). Vzhledem k mému profilu a předčasné menstruaci po 14 dnech — co to naznačuje, co dál sledovat, kdy jít k lékaři. Nezapomeň red flag varování.",
+      "category": "priznak"
+    },
+    {
+      "id": "migrena-aura",
+      "icon": "🌪️",
+      "title": "Migréna s aurou — plán",
+      "description": "Prevence a akutní ošetření",
+      "prompt": "Rozbor migrény s vizuální aurou. Neurobiologický mechanismus (šířící se kortikální deprese, cortical spreading depression), TCM pohled (vnitřní vítr z Jater, Xue Xu = deficit krve), ájurvéda (Vata-Pitta v hlavě). Vzhledem k mému profilu: (1) prevence každodenní, (2) co udělat při první auře (aby se rozvinutá migréna nekonala), (3) kdy nutně jít k neurologovi. ⚠️ Migréna s aurou je red flag — vždy to připomeň.",
+      "category": "priznak"
+    },
+    {
+      "id": "plet",
+      "icon": "✨",
+      "title": "Pleť — stav a péče",
+      "description": "Vnitřní i vnější přístup",
+      "prompt": "Vzhledem k mému profilu (suchá, šedavá, ochablá pleť, milia, akné na čelisti, vystouplé pihy) mi udělej ucelený rozbor: co pleti chybí a co jí přebývá. Vnitřní přístup (strava, byliny). Vnější přístup (aktualní kosmetika co mám — Nobilis Tilia mandlový/pupalkový krém, Renovality Tremella/Bakuchiol/Dračí krev). Pořadí nanášení. Co pravděpodobně za měsíc uvidím.",
+      "category": "priznak"
+    },
+    {
+      "id": "vlasy-sediny",
+      "icon": "💇‍♀️",
+      "title": "Vlasy a šediny",
+      "description": "Proč a co s tím",
+      "prompt": "Vysvětli mi šediny pouze v pravém spánku z pohledu TCM (dráha Žlučníku, Játra, deficit krve v této dráze) a moderní medicíny (oxidativní stres, deficit B12, mědi, tyrosinázy). Vypadávání vnější třetiny obočí — hypothyreóza? Ke každému: co konkrétně udělat a jaké vyšetření mít.",
+      "category": "priznak"
+    },
+    {
+      "id": "doplnky-teto-fazi",
+      "icon": "🍄",
+      "title": "Doplňky — co brát teď",
+      "description": "Priority z mé domácí lékárny",
+      "prompt": "Ze všeho, co mám doma (Cordyceps, Reishi, Coriolus, Polyporus, Chaga, Schisandra tinktura, Ašvaganda, ženšen řezaný, Shilajit, Fytomineral, černý sezam, jujuba, goji), navrhni PRIORITU: co brát každý den v této fázi, co po ránu, co večer, co občas, co ještě odložit. Krátké odůvodnění pro každé.",
+      "category": "planovani"
+    },
+    {
+      "id": "kombinace-jidla",
+      "icon": "🥣",
+      "title": "Zkontroluj kombinaci jídla",
+      "description": "Zadáš jídlo v Otázce a poletí kontrolou",
+      "prompt": "Zadám ti kombinaci jídel a bylin: [ZDE POPIŠ SVOU KOMBINACI]. Zkontroluj přes tři vrstvy: (1) ájurvédské viruddha ahara, (2) TCM kombinační pravidla, (3) bylinné a lékové interakce. Ke každému problému uveď semafor (🔴/🟡/🟢). Vzhledem k mému profilu — je tato kombinace pro mě dnes bezpečná?",
+      "category": "praktika"
+    },
+    {
+      "id": "emocni-vzorec",
+      "icon": "💭",
+      "title": "Za mým příznakem — emoční vzorec",
+      "description": "Psychosomatická hloubka",
+      "prompt": "Napíšu ti fyzický příznak nebo situaci: [ZDE POPIŠ]. Rozbor psychosomatického vzorce z pohledu Gabor Maté (autoimunita = 'ne' které neřeknu), van der Kolk (trauma v těle), Porges (autonomní stav), Sarno (potlačená emoce). Nebuď obecná — konkrétně pro mě. Jak s tím pracovat somaticky (Levine, TRE, dýchání).",
+      "category": "psychosomatika"
+    },
+    {
+      "id": "rano-rutina",
+      "icon": "☀️",
+      "title": "Ranní rutina — optimalizace",
+      "description": "Krok za krokem",
+      "prompt": "Navrhni mi optimální ranní rutinu (60-90 min od probuzení) vzhledem k mému profilu, ročnímu období a aktuálnímu stavu (co je v deníku). Zahrň: prvních 5 minut, hydrataci, pohyb, snídani, doplňky. Uveď časování a proč právě takto.",
+      "category": "praktika"
+    }
+
+  ]
 }
 };

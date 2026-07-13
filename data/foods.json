@@ -1,0 +1,760 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-05-11",
+  "notes": "Základní databáze pro start. Pro každou potravinu jsou uvedeny vlastnosti v TCM a ájurvédě + vhodnost pro Zuzanin aktuální stav (deficit Sleziny, vlhká horkost, deficit Yin). Zdroje: Charaka Samhita, Bhavaprakasha, Bensky Materia Medica, Pitchford 'Healing With Whole Foods'.",
+  "foods": [
+
+    {
+      "id": "jahly",
+      "name": "Jáhly (proso)",
+      "aliases": ["millet", "Setaria italica"],
+      "category": "obiloviny",
+      "tcm": {
+        "thermalNature": "neutrální až mírně chladivá",
+        "taste": "sladká, lehce slaná",
+        "organs": ["Slezina", "Žaludek", "Ledviny"],
+        "actions": "tonizuje Slezinu, odvádí vlhkost, harmonizuje žaludek"
+      },
+      "ayurveda": {
+        "rasa": "sladká, lehce svíravá",
+        "virya": "chladivá (mírně)",
+        "vipaka": "sladká",
+        "doshicEffect": "Kapha + (mírně), Vata +, Pitta -",
+        "qualities": "lehká, suchá"
+      },
+      "modern": "Bezlepkové, alkalické. Bohaté na hořčík, mangan, fosfor, B vitamíny. Tradičně doporučované pro citlivé trávení.",
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Klíčová obilovina pro její profil. Tonizuje slabou Slezinu, odvádí vlhkost (otoky, celulitida). Nasucho opražit před vařením pro zahřívací efekt — tím se neutralizuje mírná chladivost."
+      },
+      "preparation": "Nasucho opražit 30-60 s do oříškové vůně, pak vařit 1:2.5 vodou s lžičkou ghí a špetkou soli ~20 min."
+    },
+
+    {
+      "id": "ryze-basmati",
+      "name": "Rýže basmati (bílá)",
+      "aliases": ["basmati rice", "Oryza sativa"],
+      "category": "obiloviny",
+      "tcm": {
+        "thermalNature": "neutrální",
+        "taste": "sladká",
+        "organs": ["Slezina", "Žaludek"],
+        "actions": "tonizuje Qi Sleziny, harmonizuje střední ohřívač, snadno stravitelná"
+      },
+      "ayurveda": {
+        "rasa": "sladká",
+        "virya": "chladivá (jemně)",
+        "vipaka": "sladká",
+        "doshicEffect": "tridoshic — vyrovnává všechny tři dóši",
+        "qualities": "lehká, jemná"
+      },
+      "modern": "Nižší glykemický index než ostatní bílé rýže. Snadno stravitelná.",
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "V ájurvédě jediná obilovina označená jako tridoshic. Bezpečná volba i při slabém Agni. Lépe stravitelná než hnědá rýže."
+      }
+    },
+
+    {
+      "id": "pohanka",
+      "name": "Pohanka (světle/mechanicky loupaná)",
+      "aliases": ["buckwheat", "Fagopyrum esculentum"],
+      "category": "obiloviny",
+      "tcm": {
+        "thermalNature": "chladivá",
+        "taste": "sladká, jemně hořká",
+        "organs": ["Slezina", "Žaludek", "Tlusté střevo"],
+        "actions": "odvádí vlhkost, snižuje akumulaci, zpevňuje cévy"
+      },
+      "ayurveda": {
+        "rasa": "svíravá, sladká",
+        "virya": "zahřívací",
+        "vipaka": "pálivá",
+        "doshicEffect": "Kapha -, Vata +",
+        "qualities": "suchá, lehká"
+      },
+      "modern": "Bezlepková. Obsahuje rutin — zpevňuje cévy a kapiláry, podporuje lymfatický systém. Dobrý zdroj manganu.",
+      "forHer": {
+        "rating": "dobrá",
+        "reasoning": "Vysušuje vlhkost (otoky, celulitida) a rutin pomáhá lymfě. Pro Zuzanu preferovat světlou (mechanicky loupanou), ne tmavou praženou — ta by mohla přidávat horko k jejímu vnitřnímu papiňáku."
+      }
+    },
+
+    {
+      "id": "slzovka",
+      "name": "Slzovka (Jobovy slzy)",
+      "aliases": ["Yi Yi Ren", "Coix lacryma-jobi", "Job's tears", "Bílá melta"],
+      "category": "obiloviny / léčivá zrna",
+      "tcm": {
+        "thermalNature": "mírně chladivá",
+        "taste": "sladká, fádní",
+        "organs": ["Slezina", "Žaludek", "Plíce"],
+        "actions": "odvádí vlhkost a horkost, posiluje Slezinu, čistí hnis (čistí lymfu, akné), uvolňuje kloubní vlhkost"
+      },
+      "ayurveda": {
+        "rasa": "sladká, svíravá",
+        "virya": "chladivá",
+        "vipaka": "sladká",
+        "doshicEffect": "Kapha --, Pitta -, Vata +",
+        "qualities": "lehká, suchá"
+      },
+      "modern": "Studie naznačují podporu metabolismu lipidů, mírný protizánětlivý efekt. (Zdroje: Yamamoto 1997, různé klasické TCM materia medica.)",
+      "forHer": {
+        "rating": "klíčová",
+        "reasoning": "Pravděpodobně nejdůležitější potravina pro Zuzanin profil. Cílí přímo na její primární problém: Vlhkou Horkost. Pomáhá s celulitidou, akné, otoky, ranními otoky očí, výtoky. Pravidelný odvar 2 l denně.",
+        "preparation": "Propláchnout, namočit 1 h. Vařit ½ šálku v 1.5–2 l vody 45–60 min se zázvorem (na vyvážení chladivosti) a kouskem mořské řasy Kombu. Voda = nápoj, zrna jíst v kaši."
+      }
+    },
+
+    {
+      "id": "kokos-mlade",
+      "name": "Kokos (mladý — voda, dužina)",
+      "aliases": ["young coconut"],
+      "category": "ovoce tropické",
+      "tcm": {
+        "thermalNature": "chladivá",
+        "taste": "sladká",
+        "organs": ["Žaludek", "Slezina", "Plíce"],
+        "actions": "doplňuje tekutiny, mírní horko a žízeň"
+      },
+      "ayurveda": {
+        "rasa": "sladká",
+        "virya": "chladivá",
+        "vipaka": "sladká",
+        "doshicEffect": "Pitta --, Vata -, Kapha ++",
+        "qualities": "těžká, vlhká, mastná"
+      },
+      "modern": "Bohatý na elektrolyty (draslík), MCT v dužině. Vhodný v tropech / horku, problematický při Kapha nerovnováze.",
+      "forHer": {
+        "rating": "vyhnout se",
+        "reasoning": "Přímo zhoršuje její dominantní problém: chlad + vlhkost + Kapha. Korelace s nástupem akné na čelisti/krku a 'rosolovitosti'. Pracovní přístup k produktům je past — paradoxně to nejhorší jídlo pro její konstituci."
+      }
+    },
+
+    {
+      "id": "cocofir",
+      "name": "Cocofir (fermentovaný kokosový nápoj, Wild & Coco)",
+      "category": "fermentované, kokosové produkty",
+      "tcm": {
+        "thermalNature": "chladivá",
+        "taste": "sladká, jemně kyselá",
+        "organs": ["Žaludek", "Slezina"],
+        "actions": "podporuje mikrobiom, ALE vnáší chlad a vlhkost"
+      },
+      "ayurveda": {
+        "doshicEffect": "Kapha ++, Pitta -, Vata mírně"
+      },
+      "modern": "Probiotika — pozitivní pro mikrobiom u zdravých lidí. U lidí s vlhkostí a slabým Agni může paradoxně zhoršovat dysbiózu (kandida miluje sladké + chladivé prostředí).",
+      "forHer": {
+        "rating": "vyhnout se",
+        "reasoning": "Dvojnásobná zátěž: chlad kokosu + cukr v některých variantách + studená teplota při konzumaci. Akné, otoky, rosolovitost. Cesta ven: dojíst zásoby ohřáté a se skořicí/zázvorem, dál nekupovat."
+      }
+    },
+
+    {
+      "id": "dyne-hokaido",
+      "name": "Dýně Hokkaido",
+      "aliases": ["Hokkaido pumpkin"],
+      "category": "kořenová/dýňovitá zelenina",
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "sladká",
+        "organs": ["Slezina", "Žaludek"],
+        "actions": "tonizuje Qi Sleziny, harmonizuje střední ohřívač, mírně odvádí vlhkost"
+      },
+      "ayurveda": {
+        "rasa": "sladká",
+        "virya": "zahřívací",
+        "vipaka": "sladká",
+        "doshicEffect": "Vata -, Pitta neutral, Kapha mírně +",
+        "qualities": "vyživující, mírně těžká"
+      },
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Sladká chuť uspokojuje Slezinu bez tvorby hlenu jako bílý cukr. Bezpečná náhrada za 'craving' na sladké. Pečená nebo dušená, se skořicí a hřebíčkem."
+      }
+    },
+
+    {
+      "id": "batat",
+      "name": "Batáty (sladké brambory)",
+      "aliases": ["sweet potato", "Ipomoea batatas"],
+      "category": "kořenová zelenina",
+      "tcm": {
+        "thermalNature": "neutrální až mírně teplá",
+        "taste": "sladká",
+        "organs": ["Slezina", "Žaludek", "Ledviny"],
+        "actions": "tonizuje Qi Sleziny a Yin Ledvin, harmonizuje"
+      },
+      "ayurveda": {
+        "doshicEffect": "Vata -, Pitta neutral, Kapha mírně +",
+        "qualities": "vyživující"
+      },
+      "modern": "Beta-karoten, vláknina, draslík. Stabilní glykemický profil.",
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Hluboká výživa Sleziny i Ledvin. Pečené s kořením (skořice, kardamom) = zázračné jídlo pro její profil."
+      }
+    },
+
+    {
+      "id": "rajce",
+      "name": "Rajče",
+      "aliases": ["tomato", "Solanum lycopersicum"],
+      "category": "zelenina (botanicky ovoce)",
+      "tcm": {
+        "thermalNature": "chladivá",
+        "taste": "sladká, kyselá",
+        "organs": ["Žaludek", "Játra"],
+        "actions": "mírní horko, podporuje tekutiny, mírně tonizuje krev"
+      },
+      "ayurveda": {
+        "rasa": "kyselá, sladká",
+        "virya": "zahřívací (paradoxně — Pitta agrravující)",
+        "doshicEffect": "Pitta ++, Vata + (zvlášť syrová), Kapha mírně -",
+        "qualities": "ostrá, lehce vlhká"
+      },
+      "modern": "Lykopen (antioxidant). Solaniny (rod lilkovitých) — u některých lidí vyvolávají záněty kloubů.",
+      "forHer": {
+        "rating": "opatrně",
+        "reasoning": "Syrová a večer = problém: chlad + kyselost stahují, ráno otoky očí. Pokud sníst, tak tepelně upravená na ghí s bazalkou a sušeným zázvorem — tím se neutralizuje chladivost a kyselost se vyváží. Lépe v poledne."
+      }
+    },
+
+    {
+      "id": "okurka",
+      "name": "Okurka",
+      "aliases": ["cucumber", "Cucumis sativus"],
+      "category": "zelenina",
+      "tcm": {
+        "thermalNature": "chladivá",
+        "taste": "sladká, svíravá",
+        "organs": ["Slezina", "Žaludek", "Tlusté střevo"],
+        "actions": "odstraňuje horko, zvlhčuje, mírní žízeň, podporuje močení"
+      },
+      "ayurveda": {
+        "doshicEffect": "Pitta -, Vata - (s olejem a solí), Kapha +"
+      },
+      "forHer": {
+        "rating": "opatrně",
+        "reasoning": "Vhodná v létě při Pitta převaze. Pro ni v jejím deficitu Sleziny a Yang lepší vynechat nebo jen občas a vždy tepelně upravená (např. dušená)."
+      }
+    },
+
+    {
+      "id": "kveták",
+      "name": "Květák",
+      "category": "zelenina",
+      "tcm": {
+        "thermalNature": "neutrální",
+        "taste": "sladká",
+        "organs": ["Slezina", "Plíce"]
+      },
+      "ayurveda": {
+        "doshicEffect": "Kapha -, Vata + (nadýmá), Pitta -"
+      },
+      "forHer": {
+        "rating": "dobrý",
+        "reasoning": "Tepelně upravený, dušený s asafoetidou (proti nadýmání) — vhodný."
+      }
+    },
+
+    {
+      "id": "mrkev",
+      "name": "Mrkev",
+      "category": "kořenová zelenina",
+      "tcm": {
+        "thermalNature": "neutrální",
+        "taste": "sladká",
+        "organs": ["Slezina", "Játra", "Plíce"],
+        "actions": "tonizuje krev, posiluje Slezinu, podporuje zrak"
+      },
+      "ayurveda": {
+        "doshicEffect": "vařená: Vata -, Kapha mírně +, Pitta -",
+        "qualities": "sladká, zemitá"
+      },
+      "modern": "Beta-karoten — vařená a s tukem mnohem lépe vstřebatelný.",
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Pečená nebo dušená s ghí. Tonizuje Slezinu a krev — důležité pro její šediny a oči."
+      }
+    },
+
+    {
+      "id": "ghee",
+      "name": "Ghí (přepuštěné máslo)",
+      "aliases": ["ghee", "ghṛta"],
+      "category": "tuky",
+      "tcm": {
+        "thermalNature": "neutrální až mírně teplá",
+        "taste": "sladká",
+        "organs": ["Slezina", "Žaludek", "Játra"],
+        "actions": "vyživuje Yin a krev, promáže šlachy a klouby"
+      },
+      "ayurveda": {
+        "rasa": "sladká",
+        "virya": "chladivá (paradoxně — zahřívá agni, ale ochlazuje tkáně)",
+        "vipaka": "sladká",
+        "doshicEffect": "Vata --, Pitta -, Kapha mírně + (s mírou)",
+        "qualities": "snadno vstřebatelný, posiluje ojas, ale nezahleňuje"
+      },
+      "modern": "Bez kaseinu a laktózy (klarifikováno). Vitaminy A, D, E, K v rozpustné formě. Bod kouření vysoký.",
+      "forHer": {
+        "rating": "klíčové",
+        "reasoning": "V ájurvédě jediný tuk, který paradoxně posiluje Agni (na rozdíl od jiných tuků). Vyživuje suchost (klouby, sklovinu), promáže šlachy (její přeskakující klouby!), podporuje vstřebávání minerálů. 1 lžička ráno do kávy nebo s jídlem."
+      }
+    },
+
+    {
+      "id": "cerny-sezam",
+      "name": "Černý sezam (a tahini)",
+      "aliases": ["black sesame", "Hei Zhi Ma"],
+      "category": "semínka",
+      "tcm": {
+        "thermalNature": "neutrální",
+        "taste": "sladká",
+        "organs": ["Játra", "Ledviny"],
+        "actions": "tonizuje krev Jater, doplňuje esenci Jing Ledvin, zvlhčuje suché střevo, vyživuje vlasy a šlachy"
+      },
+      "ayurveda": {
+        "doshicEffect": "Vata --, Pitta + (s mírou), Kapha +",
+        "qualities": "těžký, mastný, vyživující"
+      },
+      "modern": "Vápník, hořčík, železo, lignany. Vstřebatelná forma minerálů.",
+      "forHer": {
+        "rating": "klíčové",
+        "reasoning": "Přímo na její šediny v pravém spánku, mizející zubní sklovinu, suchou pleť, vypadávající obočí. Klasický TCM lék na deficit Jing. 1-2 lžičky tahini denně, v teplé kaši nebo s ghí."
+      }
+    },
+
+    {
+      "id": "cervena-cocka",
+      "name": "Červená čočka (loupaná)",
+      "aliases": ["red lentils", "Lens culinaris"],
+      "category": "luštěniny",
+      "tcm": {
+        "thermalNature": "neutrální až mírně teplá",
+        "taste": "sladká",
+        "organs": ["Slezina", "Srdce"],
+        "actions": "tonizuje Qi Sleziny, mírně tonizuje krev"
+      },
+      "ayurveda": {
+        "doshicEffect": "lehčí než většina luštěnin; Vata mírně - (s asafoetidou), Pitta -, Kapha -"
+      },
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Nejlehčí luštěnina pro slabou Slezinu. Bez slupek, rychle se rozpadá. Vařit s asafoetidou, kmínem a zázvorem."
+      }
+    },
+
+    {
+      "id": "mung-dal",
+      "name": "Mungo dál (loupané a půlené)",
+      "aliases": ["mung dal", "Vigna radiata"],
+      "category": "luštěniny",
+      "tcm": {
+        "thermalNature": "chladivá (loupané) / neutrální (celé)",
+        "taste": "sladká",
+        "organs": ["Slezina", "Žaludek"],
+        "actions": "odstraňuje horko a toxiny, mírně odvádí vlhkost"
+      },
+      "ayurveda": {
+        "rasa": "sladká, svíravá",
+        "virya": "chladivá",
+        "vipaka": "sladká",
+        "doshicEffect": "tridoshic (loupané); celé mungo je více chladivé",
+        "qualities": "lehké, snadno stravitelné"
+      },
+      "forHer": {
+        "rating": "dobrý",
+        "reasoning": "V ájurvédě nejlepší 'cleanse' protein. Tradiční kitchari s rýží basmati. Vařit s kořením (kmín, zázvor, asafoetida, kurkuma) na ghí."
+      }
+    },
+
+    {
+      "id": "cizrna",
+      "name": "Cizrna",
+      "aliases": ["chickpea", "Cicer arietinum"],
+      "category": "luštěniny",
+      "tcm": {
+        "thermalNature": "neutrální",
+        "taste": "sladká",
+        "organs": ["Srdce", "Slezina", "Žaludek"]
+      },
+      "ayurveda": {
+        "doshicEffect": "Kapha -, Vata + (nadýmá!), Pitta -",
+        "qualities": "těžká, suchá"
+      },
+      "forHer": {
+        "rating": "počkat",
+        "reasoning": "Pro slabou Slezinu těžká na trávení, často nadýmá. Cizrnové těstoviny jsou lehčí varianta — povařit déle, jíst s kořením proti nadýmání (kmín, saturejka), jen k obědu. Až se Slezina posílí, postupně zařadit i celou cizrnu."
+      }
+    },
+
+    {
+      "id": "tempeh-lupina",
+      "name": "Tempeh z lupiny (vlčí bob)",
+      "aliases": ["lupin tempeh", "Lupinus albus"],
+      "category": "fermentované, luštěninové",
+      "tcm": {
+        "thermalNature": "neutrální (fermentací mírně teplejší)"
+      },
+      "ayurveda": {
+        "doshicEffect": "lehčí než sójový tempeh; Kapha -, Vata neutral, Pitta -"
+      },
+      "modern": "Vysoký obsah bílkovin (cca 36 g/100 g), nízký GI, fermentace zlepšuje stravitelnost. Bez sóji = bez fytoestrogenů.",
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Lepší volba než sójový tempeh. Fermentace pomáhá slabému Agni. Vždy tepelně upravit, restovat na ghí se zázvorem. Lupina v TCM mírně podporuje Slezinu a odvádí vlhkost."
+      }
+    },
+
+    {
+      "id": "sardinky",
+      "name": "Sardinky (s kostmi, v olivovém oleji)",
+      "aliases": ["sardines"],
+      "category": "ryby",
+      "tcm": {
+        "thermalNature": "neutrální až mírně teplá",
+        "taste": "sladká, slaná",
+        "organs": ["Slezina", "Ledviny"],
+        "actions": "tonizuje Qi a krev, posiluje Ledviny, vyživuje kosti"
+      },
+      "ayurveda": {
+        "doshicEffect": "Vata --, Kapha mírně +, Pitta +",
+        "qualities": "zahřívající, vyživující"
+      },
+      "modern": "Vápník (z kostí, biodostupný!), vitamin D, omega-3 EPA/DHA, B12, CoQ10. Nízká rtuť (krátký potravní řetězec).",
+      "forHer": {
+        "rating": "klíčové",
+        "reasoning": "Přímo cílí na: mizející zubní sklovinu (vápník+D+K2 z kostí), suchou pleť (omega-3), únavu (B12), přeskakující klouby (omega-3 protizánětlivě). 2-3x týdně. Značky: Wild Planet (BPA-free), Fish 4 Ever, Pan Do Mar. Jíst teplé/temperované, s rýží basmati nebo cizrnovými těstovinami."
+      }
+    },
+
+    {
+      "id": "hovezi-vyvar",
+      "name": "Kostní vývar (hovězí, dlouho tažený)",
+      "aliases": ["bone broth"],
+      "category": "vývary",
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "sladká",
+        "organs": ["Slezina", "Ledviny"],
+        "actions": "tonizuje Qi, krev a esenci Jing"
+      },
+      "ayurveda": {
+        "doshicEffect": "Vata --, Kapha mírně + (vyživující)",
+        "qualities": "rasayana (omlazující)"
+      },
+      "modern": "Kolagen typu I, II, III; glycin, prolin, glutamin (regenerace střevní sliznice); vápník, hořčík, fosfor, glykosaminoglykany.",
+      "forHer": {
+        "rating": "klíčové",
+        "reasoning": "Tekutá výživa kostí, kloubů, pleti, střev. 'Tekuté zlato' pro její profil — sklovina, klouby, šedavá pleť, deficit krve. 1 šálek denně, popíjet teplý. Vařit 12-24 h."
+      }
+    },
+
+    {
+      "id": "kurkuma",
+      "name": "Kurkuma",
+      "aliases": ["turmeric", "Curcuma longa", "Haridra"],
+      "category": "koření",
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "pálivá, hořká",
+        "organs": ["Játra", "Slezina"],
+        "actions": "hýbe krví, rozhání stagnace, mírně odstraňuje vlhkost, čistí Játra"
+      },
+      "ayurveda": {
+        "rasa": "hořká, pálivá, svíravá",
+        "virya": "zahřívací",
+        "vipaka": "pálivá",
+        "doshicEffect": "tridoshic v malém množství; větší dávky Vata +",
+        "qualities": "lehká, suchá, pročišťující"
+      },
+      "modern": "Kurkumin — silně protizánětlivý. Lepší vstřebávání s tukem (ghí, olej) a černým pepřem (piperin).",
+      "forHer": {
+        "rating": "dobrá",
+        "reasoning": "Pomáhá s lymfou, akné, jaterní stagnací. Vždy s tukem + pepřem. Pozor — nepřehánět, protože je vysušující (Vata)."
+      }
+    },
+
+    {
+      "id": "zazvor-cerstvy",
+      "name": "Zázvor čerstvý",
+      "aliases": ["fresh ginger", "Zingiber officinale", "Sheng Jiang"],
+      "category": "koření / léčivá",
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "pálivá",
+        "organs": ["Plíce", "Slezina", "Žaludek"],
+        "actions": "uvolňuje povrch, rozpouští chlad, harmonizuje žaludek, transformuje vlhkost"
+      },
+      "ayurveda": {
+        "rasa": "pálivá, sladká (mírně)",
+        "virya": "zahřívací",
+        "vipaka": "sladká",
+        "doshicEffect": "tridoshic v rozumném množství",
+        "qualities": "lehký, klouzavý"
+      },
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "'Univerzální lék'. Zapaluje slabé Agni, rozhání vlhkost a chlad. Plátek do horké vody ráno. Pozor — koncentrovaná 100% šťáva je pro ni příliš silná, používat jen pár kapek."
+      }
+    },
+
+    {
+      "id": "skoricove",
+      "name": "Skořice (cejlonská)",
+      "aliases": ["cinnamon (Ceylon)", "Cinnamomum verum", "Rou Gui (kasie pevně řečeno)"],
+      "category": "koření",
+      "tcm": {
+        "thermalNature": "horká",
+        "taste": "pálivá, sladká",
+        "organs": ["Ledviny", "Slezina", "Srdce"],
+        "actions": "zahřívá Yang Ledvin, rozhání vnitřní chlad, podporuje trávení"
+      },
+      "ayurveda": {
+        "doshicEffect": "Kapha --, Vata -, Pitta +",
+        "qualities": "lehká, zahřívající"
+      },
+      "modern": "Cejlonská skořice — bezpečnější (nízký kumarin). Kasie obsahuje vyšší kumarin (pozor na játra ve velkých dávkách).",
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Pro deficit Yangu, vnitřní chlad, slabou Slezinu — ideální. Do kaše, kávy, pečené dýně. Volit cejlonskou (víc bezpečná než kasie)."
+      }
+    },
+
+    {
+      "id": "kardamom",
+      "name": "Kardamom zelený",
+      "aliases": ["green cardamom", "Elettaria cardamomum"],
+      "category": "koření",
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "pálivá, aromatická",
+        "organs": ["Slezina", "Žaludek", "Plíce"],
+        "actions": "rozhání vlhkost, harmonizuje střední ohřívač"
+      },
+      "ayurveda": {
+        "rasa": "pálivá, sladká",
+        "virya": "zahřívací",
+        "doshicEffect": "tridoshic, zvlášť dobrý pro Kapha"
+      },
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Klasický 'odvrátit chlad kokosu' a 'rozhýbat trávení'. Skvělý do kávy, kaše, čaje ze slzovky."
+      }
+    },
+
+    {
+      "id": "asafoetida",
+      "name": "Asafoetida (ASA, čertovo lejno, hing)",
+      "aliases": ["asafoetida", "hing", "Ferula assa-foetida"],
+      "category": "koření",
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "pálivá, hořká",
+        "actions": "rozhání plyn a stagnaci, otevírá zavřené kanály"
+      },
+      "ayurveda": {
+        "doshicEffect": "Vata --, Kapha -, Pitta +",
+        "qualities": "ostrá, pronikavá"
+      },
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Klíčové koření při slabém Agni a luštěninách. Špetka při vaření čočky/munga = méně nadýmání. Vždy ho používat s ghí (lépe se aktivuje)."
+      }
+    },
+
+    {
+      "id": "shilajit",
+      "name": "Shilajit (Mumio)",
+      "aliases": ["mumio", "shilajit pryskyřice"],
+      "category": "minerální komplex / rasayana",
+      "ayurveda": {
+        "rasa": "hořká, slaná, pálivá",
+        "virya": "zahřívací",
+        "doshicEffect": "tridoshic, zejména posiluje Vata-Kapha; Pitta opatrně",
+        "qualities": "rasayana — omlazující, regenerující kosti a sklovinu"
+      },
+      "modern": "Kyselina fulvová (vstřebává minerály do buněk), 80+ stopových prvků v iontové formě, dibenzo-α-pyrony. Studie podporují funkci mitochondrií.",
+      "forHer": {
+        "rating": "klíčové",
+        "reasoning": "Pro mizející sklovinu, slabé kosti, únavu — přímý cíl. Velikost zrnka rýže denně, rozpustit v teplé vodě ráno. Volit pryskyřici (ne kapsle s práškem)."
+      }
+    },
+
+    {
+      "id": "jablko-pecene",
+      "name": "Jablko (pečené, dušené)",
+      "category": "ovoce",
+      "tcm": {
+        "thermalNature": "syrové: chladivé, pečené: neutrální až teplé",
+        "taste": "sladká, kyselá"
+      },
+      "ayurveda": {
+        "doshicEffect": "pečené se skořicí: tridoshic; syrové: Vata +"
+      },
+      "forHer": {
+        "rating": "dobré (pečené)",
+        "reasoning": "Tepelně upravené se skořicí a hřebíčkem — bezpečné a léčivé. Syrové po jídle = kvašení a nafouknutí."
+      }
+    },
+
+    {
+      "id": "boruvky",
+      "name": "Borůvky (vařené)",
+      "category": "ovoce",
+      "tcm": {
+        "thermalNature": "neutrální",
+        "taste": "sladká, kyselá",
+        "actions": "tonizuje krev"
+      },
+      "ayurveda": {
+        "doshicEffect": "vařené se skořicí: tridoshic"
+      },
+      "forHer": {
+        "rating": "dobré (vařené)",
+        "reasoning": "Vařené s kapkou skořice a hřebíčku — výživa krve. Syrové studené z lednice ne."
+      }
+    },
+
+    {
+      "id": "rezana-repa",
+      "name": "Červená řepa (pečená)",
+      "aliases": ["beetroot"],
+      "category": "kořenová zelenina",
+      "tcm": {
+        "thermalNature": "neutrální",
+        "taste": "sladká",
+        "organs": ["Játra", "Slezina"],
+        "actions": "tonizuje krev, čistí Játra"
+      },
+      "ayurveda": {
+        "doshicEffect": "Vata -, Kapha mírně +, Pitta +"
+      },
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Rostlinný 'krevní dopink'. Pečená, nikdy syrová."
+      }
+    },
+
+    {
+      "id": "vejce-zloutek",
+      "name": "Vejce (žloutek)",
+      "category": "živočišné",
+      "tcm": {
+        "thermalNature": "neutrální",
+        "taste": "sladká",
+        "organs": ["Srdce", "Játra", "Ledviny"],
+        "actions": "tonizuje krev a Yin, vyživuje esenci"
+      },
+      "ayurveda": {
+        "doshicEffect": "Vata -, Kapha mírně +, Pitta + (zvlášť smažené)",
+        "qualities": "vyživující, posiluje ojas"
+      },
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Klíčový zdroj cholinu, B12, železa, vitaminu D. Žloutek na měkko nejlépe — vstřebatelné, snadné pro Slezinu. K snídani ideální."
+      }
+    },
+
+    {
+      "id": "hovezi",
+      "name": "Hovězí maso",
+      "category": "maso červené",
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "sladká",
+        "organs": ["Slezina", "Žaludek"],
+        "actions": "silně tonizuje Qi a krev, posiluje šlachy a kosti"
+      },
+      "ayurveda": {
+        "doshicEffect": "Vata --, Pitta +, Kapha + (s mírou)"
+      },
+      "forHer": {
+        "rating": "vynikající",
+        "reasoning": "Pro hluboký deficit krve (šediny, suchá pleť, únava). Dušené, v guláši, ve vývaru. Telecí pro lepší stravitelnost. 1-2x týdně."
+      }
+    },
+
+    {
+      "id": "zelena-trava-jecmen",
+      "name": "Zelený ječmen (mladý)",
+      "aliases": ["green barley", "young barley grass"],
+      "category": "superfoods",
+      "tcm": {
+        "thermalNature": "studená",
+        "taste": "hořká, sladká",
+        "actions": "silně odstraňuje horko, pročišťuje"
+      },
+      "ayurveda": {
+        "doshicEffect": "Pitta -, Vata +, Kapha mírně -"
+      },
+      "forHer": {
+        "rating": "vyhnout se (teď)",
+        "reasoning": "Extrémně chladivý a pročišťující — pro někoho s nadbytkem horka z masa/alkoholu. Pro ni s deficitem Yangu by uhasil i to málo trávicího ohně, co má."
+      }
+    },
+
+    {
+      "id": "morske-rasy-kombu",
+      "name": "Mořská řasa Kombu",
+      "category": "mořské řasy",
+      "tcm": {
+        "thermalNature": "chladivá",
+        "taste": "slaná",
+        "actions": "rozpouští ztvrdliny, odstraňuje hlen, mírně odvádí vlhkost"
+      },
+      "ayurveda": {
+        "doshicEffect": "Kapha -, Vata mírně - (s mírou)"
+      },
+      "modern": "Jod, vápník, hořčík, fukoidan (protizánětlivý).",
+      "forHer": {
+        "rating": "dobrá (s mírou)",
+        "reasoning": "Kousek velikosti známky do vařené slzovky nebo polévky — pomáhá rozpouštět hleny a dodá minerály. Nikdy ve velkém a ne v syrovém salátu."
+      }
+    },
+
+    {
+      "id": "jujuba",
+      "name": "Jujuba (červené datle)",
+      "aliases": ["jujube", "Da Zao", "Ziziphus jujuba"],
+      "category": "ovoce sušené / léčivé",
+      "tcm": {
+        "thermalNature": "teplá",
+        "taste": "sladká",
+        "organs": ["Slezina", "Žaludek"],
+        "actions": "tonizuje Qi Sleziny, vyživuje krev, zklidňuje Shen (ducha)"
+      },
+      "ayurveda": {
+        "doshicEffect": "Vata --, Kapha mírně +, Pitta -"
+      },
+      "forHer": {
+        "rating": "klíčové",
+        "reasoning": "Klasický partner ženšenu — chrání žaludek, doplňuje krev. Vařit v odvaru ze slzovky. 3-5 ks rozpůlených denně, povařit, sníst."
+      }
+    },
+
+    {
+      "id": "goji",
+      "name": "Goji (kustovnice)",
+      "aliases": ["Gou Qi Zi", "Lycium barbarum"],
+      "category": "ovoce sušené / léčivé",
+      "tcm": {
+        "thermalNature": "neutrální",
+        "taste": "sladká",
+        "organs": ["Játra", "Ledviny", "Plíce"],
+        "actions": "vyživuje krev Jater, doplňuje esenci Ledvin, podporuje zrak"
+      },
+      "ayurveda": {
+        "doshicEffect": "tridoshic"
+      },
+      "forHer": {
+        "rating": "klíčové",
+        "reasoning": "Přímo na suchou pleť, oči, vyčerpání. Hrstka do odvaru ze slzovky, nebo v ranní kaši. Vařit krátce — uvolní se z nich karotenoidy."
+      }
+    }
+
+  ]
+}

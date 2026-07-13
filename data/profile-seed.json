@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-05-11",
+  "basic": {
+    "name": "Zuzana",
+    "age": 42,
+    "location": "Praha 1",
+    "occupation": "Wild & Coco (firma vyrábějící kokosové produkty)"
+  },
+  "ayurveda": {
+    "prakriti": "pravděpodobně Kapha-Vata (nutno potvrdit testem)",
+    "vikriti": "aktuálně dominuje Kapha (otoky, vlhkost, stagnace) s prvkem Vata (suchost, úzkost, předčasné stárnutí)",
+    "agni": "slabé (mandagni)",
+    "ama": "přítomná (rosolovitost, výtoky, akné)",
+    "notes": "Strava posledních 20+ let byla převážně syrová a studená, což oslabilo Agni. Aktuálně potřebuje teplo, pevnou výživu a omezení vlhkosti."
+  },
+  "tcm": {
+    "mainPattern": "Pi Qi Xu + Xue Xu (deficit Qi a krve Sleziny)",
+    "secondaryPatterns": [
+      "Shi Tan (vlhkost a hlen v podkoží)",
+      "Gan Yu (stagnace jaterní Qi → vnitřní horko)",
+      "Shen Jing Xu (deficit esence Ledvin)",
+      "Shi Re (vlhká horkost, projev na kůži)"
+    ],
+    "fiveElements": "Slezina-Žaludek (Země) — primární deficit. Játra-Žlučník (Dřevo) — stagnace s vnitřním ohněm. Ledviny (Voda) — vyčerpání esence.",
+    "notes": "Komplexní obraz: souběžný deficit (sucho, šediny, mizející sklovina) a nadbytek (vlhkost, otoky, akné). Tělo je 'papiňák s vyprahlou pouští uvnitř'."
+  },
+  "psychosomatic": {
+    "patterns": [
+      "Analytické přetížení (neustálé přemýšlení, sebekritika, soudy v hlavě) — energetický útok na Slezinu",
+      "Historie anorexie ve 20+ letech — trauma kolem výživy, strach z hladu, nedůvěra v tělo",
+      "Vysoké pracovní vytížení, nutkání 'všechno stihnout'",
+      "Tendence vytvářet si vnitřní tlak sama",
+      "Stud za tělo (celulitida, nenosí tílka) — pocit zranitelnosti spojený s oslabenou Slezinou"
+    ],
+    "frameworks": [
+      "Gabor Maté — When the Body Says No (chronický stres, autoimunita)",
+      "Bessel van der Kolk — The Body Keeps the Score (trauma v těle)",
+      "Peter Levine — somatické uvolnění traumatu"
+    ]
+  },
+  "symptoms": {
+    "current": [
+      "Ranní otoky očí, šedavá ochablá pleť",
+      "Mizející zubní sklovina, odvápňování zubů",
+      "Suchá pleť (extrémně), vystouplé pihy, milia na obličeji",
+      "Celulitida, 'rosolovité' tělo i přes každodenní cvičení",
+      "Akné na čelisti, krku, pod ušima a kolem vlasů (od konzumace kokosových produktů ve velkém)",
+      "Bolestivé přeskakování kloubů na nohou (od 23 let)",
+      "Šediny v pravém spánku (nově)",
+      "Migrény s vizuální aurou (mžitky) při přetížení",
+      "Předčasná menstruace (po 14 dnech) — nově",
+      "Časté močení + žízeň + suchost současně",
+      "Výtok",
+      "Nesnášenlivost vedra (letní 'papiňák', otoky jako balon)",
+      "Vypadávání vnější třetiny obočí",
+      "Slabé Agni — nafouknutí i po zdravém jídle",
+      "Po jídle vyčerpaná, chuť na sladké a tučné"
+    ],
+    "historical": [
+      "Anorexie ve 20+ letech",
+      "22+ let převážně syrové a studené stravy",
+      "Měsíční očista jen na rýži a mungo dal — nafouklost se vrátila",
+      "Pravidelná očista jater v minulosti — bez velkých výsledků",
+      "Ekzém poprvé v životě po 6 týdnech očistné diety (Herxheimer reakce)",
+      "Incident s tinkturou z olivových listů (5/2026) → 2 dny migrény a vyčerpání — tělo extrémně citlivé na agresivní detoxikaci"
+    ]
+  },
+  "currentSupplements": {
+    "haveAtHome": [
+      "Cordyceps (Superionherbs)",
+      "Reishi (Superionherbs)",
+      "Coriolus (Superionherbs)",
+      "Polyporus (Superionherbs)",
+      "Chaga (zatím nebrat — příliš chladná)",
+      "Schisandra tinktura 1:1",
+      "Ašvaganda (zatím čeká)",
+      "Ženšen řezaný (Vital Country)",
+      "Shilajit",
+      "Fytomineral (Energy)",
+      "Černý sezam — pasta tahini",
+      "Jujuba (červené datle)",
+      "Goji (kustovnice)"
+    ],
+    "plannedToBuy": [
+      "Slzovka (Job's tears)",
+      "Pravý korejský ženšen (Lavivant — fermentovaný, v kapslích, ne sirup)",
+      "Sardinky (Wild Planet / Fish 4 Ever / Pan Do Mar)",
+      "Kostní vývar",
+      "Ghí",
+      "Pražený ječmen místo čekanky",
+      "Tremella VitaC sérum (Renovality)",
+      "Bakuchiol sérum (Renovality)",
+      "Dračí krev sérum (Renovality)"
+    ]
+  },
+  "dietPlan": {
+    "principles": [
+      "Vše teplé, vařené, nikdy syrové nebo z lednice",
+      "Vyhnout se: kokos (vč. Cocofiru!), pšenice, cukr, granola, syrová zelenina, ovoce po jídle, zelený čaj/maté ve velkém, studené nápoje",
+      "Zařadit: jáhly, rýže basmati, pohanka světlá, slzovka, dýně, batáty, kostní vývary, sardinky, ghí, černý sezam",
+      "Maso/ryby JSOU potřeba — vyživit krev, sklovinu, esenci. Červené maso preferovaně, sardinky 2-3x týdně.",
+      "Žádné kombinace mléko+ovoce, syrové+vařené, sladké po slaném"
+    ]
+  },
+  "redFlags": [
+    "Migrény s vizuální aurou — potřebuje neurologické vyšetření (vyloučení organické příčiny)",
+    "Předčasná menstruace po 14 dnech — gynekologický check-up + krevní obraz (anémie, štítná žláza)",
+    "Vypadávání obočí v zevní třetině — typický znak hypothyreózy, doporučit TSH, fT3, fT4, anti-TPO",
+    "Mizející zubní sklovina — zubař + analýza vápníku/vitamínu D + případně bruxismus"
+  ],
+  "communicationPreferences": {
+    "language": "čeština",
+    "tone": "strukturovaně, prakticky, žádné výmysly",
+    "marking": "návrhy/domněnky vždy explicitně označit jako 'možný návrh'",
+    "sources": "při tvrzeních uvádět zdroj (Charaka, Bensky, recentní studie...)",
+    "respectDisclaimer": "u vážných příznaků vždy doporučit konzultaci s odborníkem"
+  }
+}
