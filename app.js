@@ -16,6 +16,10 @@ let profileSeed = null;
 let timelineSeed = null;
 let shortcutsDb = null;
 
+// Konverzační stav v záložce Otázka — v paměti, nepersistuje se přes reload.
+// Historie se ukládá zvlášť do 📚 Historie.
+let currentConversation = []; // [{role: 'user'|'model', text: '...'}, ...]
+
 // ============================================================
 // Bootstrap
 // ============================================================
@@ -68,6 +72,9 @@ function goBack() {
     const el = document.getElementById(id);
     if (el) el.innerHTML = '';
   });
+  // Ukončit i aktuální konverzaci v Otázce
+  currentConversation = [];
+  updateContinueButton();
   window.scrollTo({ top: 0, behavior: 'smooth' });
   updateBackButton();
 }
@@ -287,34 +294,133 @@ function renderEntries() {
 }
 
 // ============================================================
-// Otázka
+// Otázka + konverzační mód
 // ============================================================
 function setupOtazka() {
-  document.getElementById('btn-analyze').addEventListener('click', runAnalysis);
+  document.getElementById('btn-analyze').addEventListener('click', () => runAnalysis('new'));
+  document.getElementById('btn-continue').addEventListener('click', () => runAnalysis('continue'));
 }
 
-async function runAnalysis() {
-  const text = document.getElementById('otazka-text').value.trim();
+function updateContinueButton() {
+  const btn = document.getElementById('btn-continue');
+  if (!btn) return;
+  btn.disabled = currentConversation.length === 0;
+  btn.title = btn.disabled
+    ? 'Nejdřív polož první otázku'
+    : `Pokračovat v konverzaci (${currentConversation.filter(m => m.role === 'user').length} předchozích otázek)`;
+}
+
+async function runAnalysis(mode) {
+  const textInput = document.getElementById('otazka-text');
+  const text = textInput.value.trim();
   if (!text) {
     alert('Napiš svou otázku nebo problém.');
     return;
   }
+
   const output = document.getElementById('otazka-output');
-  const btn = document.getElementById('btn-analyze');
-  output.innerHTML = '<div class="loading">Analyzuji</div>';
-  btn.disabled = true;
+  const btnNew = document.getElementById('btn-analyze');
+  const btnCont = document.getElementById('btn-continue');
+
+  // Reset conversation for a new question
+  if (mode === 'new' || currentConversation.length === 0) {
+    currentConversation = [];
+    mode = 'new';
+  }
+
+  // Optimisticky přidat uživatelskou zprávu do konverzace (pro průběžný render)
+  currentConversation.push({ role: 'user', text });
+
+  // Sestavit API zprávy
+  let apiMessages;
+  if (mode === 'new') {
+    // Nová otázka — první zpráva obalená analytickým promptem pro strukturovanou odpověď
+    apiMessages = [{
+      role: 'user',
+      text: `${buildAnalyzePrompt(text)}\n\n---\n\n${text}`
+    }];
+  } else {
+    // Pokračování — pošli celou konverzaci jako přirozený dialog.
+    // První uživatelskou zprávu ve výchozím kontextu ponecháme bez wrappingu
+    // (AI má strukturální instrukce v systémovém promptu).
+    apiMessages = currentConversation.map(m => ({ role: m.role, text: m.text }));
+  }
+
+  // Vykresli konverzaci + loading
+  renderConversation(true);
+  btnNew.disabled = true;
+  btnCont.disabled = true;
   updateBackButton();
+
   try {
-    const taskPrompt = buildAnalyzePrompt(text);
-    const response = await callAI(text, taskPrompt);
-    output.innerHTML = `<div class="card">${renderMarkdown(response)}</div>`;
-    saveToHistory('otazka', '💭', text.slice(0, 80), text, response);
+    const apiKey = Storage.getApiKey();
+    if (!apiKey) {
+      openSettings();
+      throw new Error('Zadej nejdřív API klíč v nastavení.');
+    }
+    const client = new GeminiClient(apiKey, Storage.getModel());
+    const systemPrompt = buildSystemPrompt({
+      profile: Storage.getProfile(),
+      recentEntries: Storage.getEntries(),
+      foodsDb,
+      herbsDb
+    });
+    const response = await client.generate(apiMessages, systemPrompt, {
+      temperature: 0.55,
+      maxOutputTokens: 4096
+    });
+
+    currentConversation.push({ role: 'model', text: response });
+    renderConversation(false);
+
+    saveToHistory(
+      'otazka',
+      mode === 'new' ? '💭' : '🔗',
+      (mode === 'new' ? '' : '[pokračování] ') + text.slice(0, 80),
+      text,
+      response
+    );
+
+    textInput.value = '';
   } catch (e) {
-    output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
+    // Vrátit poslední uživatelskou zprávu zpět (nezobrazovat ji jako "odeslanou")
+    currentConversation.pop();
+    renderConversation(false);
+    // Zobraz chybu pod konverzací
+    output.insertAdjacentHTML('beforeend', `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`);
   } finally {
-    btn.disabled = false;
+    btnNew.disabled = false;
+    updateContinueButton();
     updateBackButton();
   }
+}
+
+function renderConversation(showLoading = false) {
+  const output = document.getElementById('otazka-output');
+  if (currentConversation.length === 0 && !showLoading) {
+    output.innerHTML = '';
+    return;
+  }
+
+  const turnsHtml = currentConversation.map((msg) => {
+    if (msg.role === 'user') {
+      return `<div class="turn-user">
+        <div class="turn-label">🙋 TY</div>
+        <div>${escapeHtml(msg.text).replace(/\n/g, '<br>')}</div>
+      </div>`;
+    } else {
+      return `<div class="turn-ai card">
+        <div class="turn-label">🌿 AI</div>
+        ${renderMarkdown(msg.text)}
+      </div>`;
+    }
+  }).join('');
+
+  const loadingHtml = showLoading
+    ? `<div class="turn-ai card"><div class="turn-label">🌿 AI</div><div class="loading">Přemýšlím</div></div>`
+    : '';
+
+  output.innerHTML = turnsHtml + loadingHtml;
 }
 
 // ============================================================
@@ -372,6 +478,7 @@ async function doLookup() {
     output.innerHTML = `${dbInfo}<div class="card">${renderMarkdown(response)}</div>`;
     const type = herb ? '🌿 Bylina' : '🥗 Jídlo';
     saveToHistory('jidlo-lookup', '🥗', `${type}: ${query}`, query, response);
+    document.getElementById('jidlo-text').value = '';
   } catch (e) {
     output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
   } finally {
@@ -401,6 +508,7 @@ async function doCombineCheck() {
     const response = await callAI(items.join(' + '), taskPrompt);
     output.innerHTML = `<div class="card">${renderMarkdown(response)}</div>`;
     saveToHistory('jidlo-combine', '🥣', `Kombinace: ${items.join(', ')}`, items.join(' + '), response);
+    document.getElementById('jidlo-text').value = '';
   } catch (e) {
     output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
   } finally {
@@ -570,17 +678,42 @@ function setupHistorie() {
   document.getElementById('historie-hledat').addEventListener('input', renderHistorie);
 }
 
+function normalizeText(s) {
+  // Odstraní diakritiku a převede na malá písmena.
+  // "migréna" → "migrena", "Ženšen" → "zensen"
+  // Rozsah U+0300–U+036F pokrývá všechny kombinovací diakritické znaky.
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+
+function matchesSearch(text, rawQuery) {
+  // Chytré vyhledávání s podporou českých pádů.
+  // 1. Přímá shoda po odstranění diakritiky
+  // 2. Postupně zkracuje dotaz o 1-4 znaky (české koncovky pádů)
+  //    tak, aby "aplikace" našlo "aplikaci", "ženšen" našlo "ženšenu" atd.
+  const q = normalizeText(rawQuery.trim());
+  if (!q) return true;
+  const t = normalizeText(text);
+
+  if (t.includes(q)) return true;
+
+  // Zkus kratší stem (min 3 znaky, aby to nebylo příliš benevolentní)
+  for (let i = 1; i <= 4; i++) {
+    if (q.length - i >= 3 && t.includes(q.slice(0, -i))) return true;
+  }
+  return false;
+}
+
 function renderHistorie() {
   const container = document.getElementById('historie-list');
-  const query = (document.getElementById('historie-hledat').value || '').toLowerCase().trim();
+  const query = (document.getElementById('historie-hledat').value || '').trim();
 
   let entries = Storage.getHistory();
 
   if (query) {
     entries = entries.filter(e =>
-      (e.title || '').toLowerCase().includes(query) ||
-      (e.prompt || '').toLowerCase().includes(query) ||
-      (e.response || '').toLowerCase().includes(query)
+      matchesSearch(e.title, query) ||
+      matchesSearch(e.prompt, query) ||
+      matchesSearch(e.response, query)
     );
   }
 

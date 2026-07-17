@@ -72,7 +72,13 @@
         <textarea id="otazka-text" placeholder="např. od minulého týdne se mi vrátily migrény s aurou a oteklé oči ráno"></textarea>
       </div>
 
-      <button class="btn" id="btn-analyze">Analyzovat</button>
+      <div class="flex" style="gap:.5rem;flex-wrap:wrap;">
+        <button class="btn" id="btn-analyze">💭 Nová otázka</button>
+        <button class="btn btn-secondary" id="btn-continue" disabled title="Nejdřív polož první otázku">🔗 Pokračovat v konverzaci</button>
+      </div>
+      <p class="small muted mt-1">
+        <strong>Nová otázka</strong> = samostatný dotaz, AI si nepamatuje předchozí. <strong>Pokračovat</strong> = AI ví, co jsme si už řekly, a odpoví v kontextu.
+      </p>
 
       <div id="otazka-output" class="mt-2"></div>
     </section>

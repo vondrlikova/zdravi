@@ -438,6 +438,30 @@ button.btn-danger {
   color: var(--text-soft);
 }
 
+/* Conversation turns in Otázka */
+.turn-user {
+  background: var(--bg-soft);
+  border-left: 3px solid var(--accent-warm);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.turn-ai {
+  border-left: 3px solid var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.turn-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  margin-bottom: 0.4rem;
+}
+
 /* Shortcut cards — clickable */
 .shortcut-card {
   cursor: pointer;
