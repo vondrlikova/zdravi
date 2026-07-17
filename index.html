@@ -25,6 +25,7 @@
     <button data-tab="otazka">💭 Otázka</button>
     <button data-tab="jidlo">🥗 Jídlo</button>
     <button data-tab="zkratky">⚡ Zkratky</button>
+    <button data-tab="recepty">📖 Recepty</button>
     <button data-tab="historie">📚 Historie</button>
     <button data-tab="profil">👤 Profil</button>
   </nav>
@@ -64,23 +65,34 @@
 
     <!-- ============ OTÁZKA ============ -->
     <section id="tab-otazka" class="tab-panel">
-      <h2>Otázka</h2>
-      <p class="subtitle">Popiš svůj problém. Analyzuji ho přes ájurvédu, TCM a psychosomatiku.</p>
-
-      <div class="form-row">
-        <label for="otazka-text">Tvůj problém nebo otázka</label>
-        <textarea id="otazka-text" placeholder="např. od minulého týdne se mi vrátily migrény s aurou a oteklé oči ráno"></textarea>
+      <div class="otazka-header">
+        <h2>Otázka</h2>
+        <p class="subtitle">Napiš dotaz nebo přidej foto — AI analyzuje přes ájurvédu, TCM a psychosomatiku.</p>
+        <div class="flex mt-1" style="gap:.5rem;flex-wrap:wrap;">
+          <button class="btn btn-secondary small" id="btn-history-conv">🕐 Předchozí konverzace</button>
+          <button class="btn btn-secondary small" id="btn-reset-conv" style="display:none;">🆕 Nová konverzace</button>
+        </div>
       </div>
 
-      <div class="flex" style="gap:.5rem;flex-wrap:wrap;">
-        <button class="btn" id="btn-analyze">💭 Nová otázka</button>
-        <button class="btn btn-secondary" id="btn-continue" disabled title="Nejdřív polož první otázku">🔗 Pokračovat v konverzaci</button>
-      </div>
-      <p class="small muted mt-1">
-        <strong>Nová otázka</strong> = samostatný dotaz, AI si nepamatuje předchozí. <strong>Pokračovat</strong> = AI ví, co jsme si už řekly, a odpoví v kontextu.
-      </p>
+      <div id="otazka-output" class="otazka-output"></div>
 
-      <div id="otazka-output" class="mt-2"></div>
+      <div class="otazka-composer">
+        <div id="image-preview" class="image-preview" style="display:none;">
+          <img id="image-preview-img" alt="Náhled">
+          <button type="button" id="btn-remove-image" class="image-remove" title="Odstranit obrázek">✕</button>
+        </div>
+
+        <textarea id="otazka-text" placeholder="Napiš svůj dotaz…" rows="3"></textarea>
+
+        <div class="composer-actions">
+          <label class="icon-btn composer-image-btn" title="Přidat foto">
+            📷
+            <input type="file" id="image-input" accept="image/*" style="display:none;">
+          </label>
+          <button class="btn" id="btn-analyze">💭 Nová otázka</button>
+          <button class="btn btn-secondary" id="btn-continue" disabled title="Nejdřív polož první otázku">🔗 Pokračovat</button>
+        </div>
+      </div>
     </section>
 
     <!-- ============ JÍDLO & BYLINY ============ -->
@@ -138,6 +150,18 @@
       <div id="zkratky-output" class="mt-2"></div>
     </section>
 
+    <!-- ============ RECEPTY ============ -->
+    <section id="tab-recepty" class="tab-panel">
+      <h2>Recepty</h2>
+      <p class="subtitle">Uložené recepty, rituály a postupy z odpovědí AI. Klikni pro rozbalení celého receptu.</p>
+
+      <div class="form-row">
+        <input type="text" id="recepty-hledat" placeholder="🔍 Hledej (např. „jáhly", „slzovka", „migréna")">
+      </div>
+
+      <div id="recepty-list"></div>
+    </section>
+
     <!-- ============ HISTORIE ============ -->
     <section id="tab-historie" class="tab-panel">
       <h2>Historie</h2>
@@ -159,11 +183,64 @@
       <h2>Můj profil</h2>
       <p class="subtitle">Tvoje konstituce a zdravotní obraz. AI bere tyto údaje v úvahu při každé odpovědi.</p>
       <div id="profil-content"></div>
-      <div class="flex mt-2">
-        <button class="btn btn-secondary" id="btn-edit-profile">Upravit profil</button>
+
+      <div class="mt-2 card" style="background:var(--bg-soft);">
+        <h3 style="margin-top:0;">🔄 Review & Update</h3>
+        <p class="small muted">AI projde tvůj deník a navrhne aktualizace profilu (nové příznaky, změny stavu, co ubylo/přibylo). Ty vidíš návrhy a rozhodneš.</p>
+        <button class="btn" id="btn-review-update">🔄 Zkontroluj profil podle deníku</button>
+        <div id="review-output" class="mt-2"></div>
+      </div>
+
+      <div class="flex mt-2" style="gap:.5rem;flex-wrap:wrap;">
+        <button class="btn btn-secondary" id="btn-edit-profile">Upravit profil (JSON)</button>
         <button class="btn btn-secondary" id="btn-export">Export dat</button>
       </div>
     </section>
+
+    <!-- ============ Save recipe modal ============ -->
+    <div class="modal-overlay" id="modal-save-recipe">
+      <div class="modal">
+        <h2>💾 Uložit jako recept</h2>
+        <p class="subtitle">Pojmenuj recept a napiš, na co ti pomůže. Uloží se do záložky 📖 Recepty.</p>
+
+        <div class="form-row">
+          <label for="recipe-name">Název receptu *</label>
+          <input type="text" id="recipe-name" placeholder="např. Ranní jáhly se skořicí a černým sezamem">
+        </div>
+
+        <div class="form-row">
+          <label for="recipe-purpose">Na co je *</label>
+          <input type="text" id="recipe-purpose" placeholder="např. Ranní snídaně pro Slezinu a proti otokům očí">
+        </div>
+
+        <div class="form-row">
+          <label for="recipe-tags">Štítky (nepovinné, oddělené čárkou)</label>
+          <input type="text" id="recipe-tags" placeholder="např. snídaně, slezina, energie">
+        </div>
+
+        <details>
+          <summary style="cursor:pointer;font-size:.85rem;color:var(--text-soft);">Náhled uloženého obsahu</summary>
+          <div id="recipe-preview" style="margin-top:.5rem;max-height:200px;overflow-y:auto;padding:.5rem;background:var(--bg-soft);border-radius:8px;font-size:.85rem;"></div>
+        </details>
+
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="btn-cancel-recipe">Zrušit</button>
+          <button class="btn" id="btn-confirm-recipe">Uložit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Previous conversations modal ============ -->
+    <div class="modal-overlay" id="modal-conv-list">
+      <div class="modal">
+        <h2>Předchozí konverzace</h2>
+        <p class="subtitle">Klikni pro znovuotevření — pak můžeš pokračovat, kde jsi přestala.</p>
+        <div id="conv-list-content" style="max-height:60vh;overflow-y:auto;"></div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="btn-close-conv-list">Zavřít</button>
+        </div>
+      </div>
+    </div>
 
   </main>
 

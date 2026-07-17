@@ -16,9 +16,28 @@ let profileSeed = null;
 let timelineSeed = null;
 let shortcutsDb = null;
 
-// Konverzační stav v záložce Otázka — v paměti, nepersistuje se přes reload.
-// Historie se ukládá zvlášť do 📚 Historie.
-let currentConversation = []; // [{role: 'user'|'model', text: '...'}, ...]
+// Konverzační stav v záložce Otázka.
+// currentConversation = pole zpráv: {role: 'user'|'model', text: string, image?: {data: base64, mimeType: string}}
+// currentConversationId = ID uložené konverzace (pokud existuje) nebo null pro novou.
+let currentConversation = [];
+let currentConversationId = null;
+let pendingImage = null; // {data: base64 (bez prefixu), mimeType: string, dataUrl: string}
+
+// Mapa odpovědí připravených k uložení jako recept.
+// Klíč = unikátní ID, hodnota = text odpovědi.
+const responsesForSaving = new Map();
+let responseIdCounter = 0;
+
+function registerResponseForSaving(text) {
+  const id = 'resp-' + (++responseIdCounter);
+  responsesForSaving.set(id, text);
+  return id;
+}
+
+function makeSaveRecipeButton(responseText) {
+  const id = registerResponseForSaving(responseText);
+  return `<div class="flex flex-end mt-1"><button class="btn btn-secondary small" data-save-recipe-id="${id}" style="font-size:.85rem;">💾 Uložit jako recept</button></div>`;
+}
 
 // ============================================================
 // Bootstrap
@@ -33,12 +52,27 @@ function init() {
   setupJidlo();
   setupZkratky();
   setupHistorie();
+  setupRecepty();
   setupProfil();
+  setupRecipeModal();
+  setupSaveRecipeDelegation();
   initFirstRun();
   renderEntries();
   renderProfile();
   renderShortcuts();
   renderHistorie();
+  renderRecepty();
+}
+
+// Delegace kliknutí na "💾 Uložit jako recept" tlačítka
+function setupSaveRecipeDelegation() {
+  document.body.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-save-recipe-id]');
+    if (!btn) return;
+    const id = btn.dataset.saveRecipeId;
+    const text = responsesForSaving.get(id);
+    if (text) openSaveRecipeModal(text);
+  });
 }
 
 // ============================================================
@@ -68,12 +102,22 @@ function setupBackButton() {
 }
 
 function goBack() {
-  ['otazka-output', 'jidlo-output', 'zkratky-output'].forEach(id => {
+  ['jidlo-output', 'zkratky-output'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = '';
   });
-  // Ukončit i aktuální konverzaci v Otázce
+  // Konverzaci v Otázce nejdřív uložit, pak vyčistit stav a zobrazení
+  if (currentConversation.length > 0) {
+    persistCurrentConversation();
+  }
   currentConversation = [];
+  currentConversationId = null;
+  pendingImage = null;
+  hideImagePreview();
+  const otazkaOutput = document.getElementById('otazka-output');
+  if (otazkaOutput) otazkaOutput.innerHTML = '';
+  const otazkaText = document.getElementById('otazka-text');
+  if (otazkaText) otazkaText.value = '';
   updateContinueButton();
   window.scrollTo({ top: 0, behavior: 'smooth' });
   updateBackButton();
@@ -294,27 +338,179 @@ function renderEntries() {
 }
 
 // ============================================================
-// Otázka + konverzační mód
+// Otázka + konverzační mód + obrázky
 // ============================================================
 function setupOtazka() {
   document.getElementById('btn-analyze').addEventListener('click', () => runAnalysis('new'));
   document.getElementById('btn-continue').addEventListener('click', () => runAnalysis('continue'));
+  document.getElementById('btn-reset-conv').addEventListener('click', resetConversation);
+  document.getElementById('btn-history-conv').addEventListener('click', openConversationsList);
+  document.getElementById('btn-close-conv-list').addEventListener('click', () => {
+    document.getElementById('modal-conv-list').classList.remove('active');
+  });
+  document.getElementById('image-input').addEventListener('change', onImagePicked);
+  document.getElementById('btn-remove-image').addEventListener('click', removePendingImage);
 }
 
 function updateContinueButton() {
-  const btn = document.getElementById('btn-continue');
-  if (!btn) return;
-  btn.disabled = currentConversation.length === 0;
-  btn.title = btn.disabled
+  const btnCont = document.getElementById('btn-continue');
+  const btnReset = document.getElementById('btn-reset-conv');
+  if (!btnCont) return;
+  btnCont.disabled = currentConversation.length === 0;
+  btnCont.title = btnCont.disabled
     ? 'Nejdřív polož první otázku'
-    : `Pokračovat v konverzaci (${currentConversation.filter(m => m.role === 'user').length} předchozích otázek)`;
+    : `Pokračovat v konverzaci (${currentConversation.filter(m => m.role === 'user').length} otázek)`;
+  if (btnReset) {
+    btnReset.style.display = currentConversation.length > 0 ? '' : 'none';
+  }
+}
+
+function resetConversation() {
+  if (currentConversation.length > 0 && !confirm('Opravdu ukončit tuto konverzaci? Bude uložená v "Předchozí konverzace" a můžeš se k ní vrátit.')) {
+    return;
+  }
+  currentConversation = [];
+  currentConversationId = null;
+  pendingImage = null;
+  document.getElementById('otazka-text').value = '';
+  hideImagePreview();
+  renderConversation(false);
+  updateContinueButton();
+  updateBackButton();
+}
+
+// ---------- Image handling ----------
+function onImagePicked(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    alert('Prosím vyber obrázek (JPG, PNG, WEBP).');
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Obrázek je moc velký (>5 MB). Zmenši ho, prosím.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = reader.result;
+    const base64 = dataUrl.split(',')[1];
+    pendingImage = {
+      data: base64,
+      mimeType: file.type,
+      dataUrl
+    };
+    showImagePreview(dataUrl);
+  };
+  reader.readAsDataURL(file);
+  // Reset input so same file can be picked again after removal
+  e.target.value = '';
+}
+
+function showImagePreview(dataUrl) {
+  document.getElementById('image-preview-img').src = dataUrl;
+  document.getElementById('image-preview').style.display = 'inline-block';
+}
+
+function hideImagePreview() {
+  document.getElementById('image-preview').style.display = 'none';
+  document.getElementById('image-preview-img').src = '';
+}
+
+function removePendingImage() {
+  pendingImage = null;
+  hideImagePreview();
+}
+
+// ---------- Conversation storage ----------
+function persistCurrentConversation() {
+  if (currentConversation.length === 0) return;
+  if (!currentConversationId) {
+    currentConversationId = 'conv-' + Date.now();
+  }
+  const firstUser = currentConversation.find(m => m.role === 'user');
+  const title = firstUser ? firstUser.text.slice(0, 80) : 'Konverzace';
+  Storage.saveConversation({
+    id: currentConversationId,
+    title,
+    updatedAt: new Date().toISOString(),
+    messages: currentConversation
+  });
+}
+
+function openConversationsList() {
+  const list = Storage.getConversations();
+  const container = document.getElementById('conv-list-content');
+  if (list.length === 0) {
+    container.innerHTML = '<p class="muted small">Zatím žádné uložené konverzace.</p>';
+  } else {
+    container.innerHTML = list.map(c => {
+      const d = new Date(c.updatedAt);
+      const dateStr = d.toLocaleString('cs-CZ', { dateStyle: 'medium', timeStyle: 'short' });
+      const turnCount = c.messages.filter(m => m.role === 'user').length;
+      return `
+        <div class="conv-list-item" data-conv-id="${escapeHtml(c.id)}">
+          <div class="conv-title">${escapeHtml(c.title)}${c.title.length >= 80 ? '…' : ''}</div>
+          <div class="conv-meta">
+            <span>${turnCount} ${turnCount === 1 ? 'otázka' : (turnCount < 5 ? 'otázky' : 'otázek')}</span>
+            <span>${dateStr}</span>
+          </div>
+          <div class="flex flex-end mt-1">
+            <button class="btn btn-secondary small" data-conv-del="${escapeHtml(c.id)}" style="font-size:.8rem;padding:.3rem .6rem;">🗑 Smazat</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    container.querySelectorAll('.conv-list-item').forEach(el => {
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('[data-conv-del]')) return;
+        loadConversation(el.dataset.convId);
+      });
+    });
+    container.querySelectorAll('[data-conv-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('Smazat tuto konverzaci?')) {
+          Storage.deleteConversation(btn.dataset.convDel);
+          openConversationsList(); // re-render
+        }
+      });
+    });
+  }
+  document.getElementById('modal-conv-list').classList.add('active');
+}
+
+function loadConversation(id) {
+  const conv = Storage.getConversation(id);
+  if (!conv) {
+    alert('Konverzace nenalezena.');
+    return;
+  }
+  currentConversation = conv.messages;
+  currentConversationId = conv.id;
+  pendingImage = null;
+  hideImagePreview();
+  document.getElementById('otazka-text').value = '';
+  document.getElementById('modal-conv-list').classList.remove('active');
+  // Přepni na záložku Otázka pokud tam nejsi
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('nav.tabs button[data-tab="otazka"]').classList.add('active');
+  document.getElementById('tab-otazka').classList.add('active');
+  renderConversation(false);
+  updateContinueButton();
+  updateBackButton();
+  // Scroll k výstupu
+  setTimeout(() => document.getElementById('otazka-output').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
 
 async function runAnalysis(mode) {
   const textInput = document.getElementById('otazka-text');
   const text = textInput.value.trim();
-  if (!text) {
-    alert('Napiš svou otázku nebo problém.');
+
+  // Musí být text NEBO obrázek
+  if (!text && !pendingImage) {
+    alert('Napiš dotaz nebo přidej obrázek.');
     return;
   }
 
@@ -322,28 +518,68 @@ async function runAnalysis(mode) {
   const btnNew = document.getElementById('btn-analyze');
   const btnCont = document.getElementById('btn-continue');
 
-  // Reset conversation for a new question
+  // Reset konverzace pro novou otázku
   if (mode === 'new' || currentConversation.length === 0) {
+    // Pokud je aktuální konverzace neprázdná a nová = uložit ji nejdřív
+    if (currentConversation.length > 0) {
+      persistCurrentConversation();
+    }
     currentConversation = [];
+    currentConversationId = null;
     mode = 'new';
   }
 
-  // Optimisticky přidat uživatelskou zprávu do konverzace (pro průběžný render)
-  currentConversation.push({ role: 'user', text });
+  // Text pro zobrazení a historii — pokud je jen obrázek, dopiš placeholder
+  const displayText = text || '(bez textu, jen obrázek)';
 
-  // Sestavit API zprávy
-  let apiMessages;
+  // Uživatelská zpráva do konverzace (pro průběžný render)
+  const userMessage = { role: 'user', text: displayText };
+  if (pendingImage) {
+    userMessage.image = { dataUrl: pendingImage.dataUrl };
+  }
+  currentConversation.push(userMessage);
+
+  // Sestavit API zprávy — pro Gemini
+  const apiMessages = [];
   if (mode === 'new') {
-    // Nová otázka — první zpráva obalená analytickým promptem pro strukturovanou odpověď
-    apiMessages = [{
-      role: 'user',
-      text: `${buildAnalyzePrompt(text)}\n\n---\n\n${text}`
-    }];
+    // První zpráva: analytický prompt + text + případně obrázek
+    const parts = [];
+    const promptText = text
+      ? `${buildAnalyzePrompt(text)}\n\n---\n\n${text}`
+      : buildAnalyzePrompt('(uživatelka poslala pouze obrázek — analyzuj ho v kontextu jejího profilu)');
+    parts.push({ text: promptText });
+    if (pendingImage) {
+      parts.push({
+        inlineData: {
+          mimeType: pendingImage.mimeType,
+          data: pendingImage.data
+        }
+      });
+    }
+    apiMessages.push({ role: 'user', parts });
   } else {
-    // Pokračování — pošli celou konverzaci jako přirozený dialog.
-    // První uživatelskou zprávu ve výchozím kontextu ponecháme bez wrappingu
-    // (AI má strukturální instrukce v systémovém promptu).
-    apiMessages = currentConversation.map(m => ({ role: m.role, text: m.text }));
+    // Pokračování — sestavit historii, přidat obrázek do poslední user zprávy
+    for (let i = 0; i < currentConversation.length; i++) {
+      const m = currentConversation[i];
+      const isLastUser = i === currentConversation.length - 1 && m.role === 'user';
+      if (isLastUser && pendingImage) {
+        // Přidej obrázek k poslední user zprávě
+        apiMessages.push({
+          role: 'user',
+          parts: [
+            { text: m.text },
+            {
+              inlineData: {
+                mimeType: pendingImage.mimeType,
+                data: pendingImage.data
+              }
+            }
+          ]
+        });
+      } else {
+        apiMessages.push({ role: m.role, text: m.text });
+      }
+    }
   }
 
   // Vykresli konverzaci + loading
@@ -351,6 +587,11 @@ async function runAnalysis(mode) {
   btnNew.disabled = true;
   btnCont.disabled = true;
   updateBackButton();
+
+  // Vyčisti obrázek z composeru (i když voláme dál — obrázek je už v userMessage)
+  const imageForHistory = pendingImage;
+  pendingImage = null;
+  hideImagePreview();
 
   try {
     const apiKey = Storage.getApiKey();
@@ -372,26 +613,36 @@ async function runAnalysis(mode) {
 
     currentConversation.push({ role: 'model', text: response });
     renderConversation(false);
+    persistCurrentConversation();
 
     saveToHistory(
       'otazka',
       mode === 'new' ? '💭' : '🔗',
-      (mode === 'new' ? '' : '[pokračování] ') + text.slice(0, 80),
-      text,
+      (mode === 'new' ? '' : '[pokračování] ') + displayText.slice(0, 80),
+      displayText + (imageForHistory ? ' [+ obrázek]' : ''),
       response
     );
 
     textInput.value = '';
   } catch (e) {
-    // Vrátit poslední uživatelskou zprávu zpět (nezobrazovat ji jako "odeslanou")
+    // Vrátit poslední uživatelskou zprávu zpět
     currentConversation.pop();
+    // Vrátit i pendingImage, aby uživatelka mohla znovu poslat
+    if (imageForHistory) {
+      pendingImage = imageForHistory;
+      showImagePreview(imageForHistory.dataUrl);
+    }
     renderConversation(false);
-    // Zobraz chybu pod konverzací
     output.insertAdjacentHTML('beforeend', `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`);
   } finally {
     btnNew.disabled = false;
     updateContinueButton();
     updateBackButton();
+    // Auto-scroll na konec konverzace (aby uživatelka viděla odpověď)
+    setTimeout(() => {
+      const last = output.lastElementChild;
+      if (last) last.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   }
 }
 
@@ -404,14 +655,19 @@ function renderConversation(showLoading = false) {
 
   const turnsHtml = currentConversation.map((msg) => {
     if (msg.role === 'user') {
+      const imgHtml = msg.image?.dataUrl
+        ? `<img class="turn-image" src="${escapeHtml(msg.image.dataUrl)}" alt="Nahraný obrázek">`
+        : '';
       return `<div class="turn-user">
         <div class="turn-label">🙋 TY</div>
         <div>${escapeHtml(msg.text).replace(/\n/g, '<br>')}</div>
+        ${imgHtml}
       </div>`;
     } else {
       return `<div class="turn-ai card">
         <div class="turn-label">🌿 AI</div>
         ${renderMarkdown(msg.text)}
+        ${makeSaveRecipeButton(msg.text)}
       </div>`;
     }
   }).join('');
@@ -475,7 +731,7 @@ async function doLookup() {
       dbInfo = `<div class="small muted mb-1">📚 Není v lokální databázi — AI použila své obecné znalosti.</div>`;
     }
 
-    output.innerHTML = `${dbInfo}<div class="card">${renderMarkdown(response)}</div>`;
+    output.innerHTML = `${dbInfo}<div class="card">${renderMarkdown(response)}${makeSaveRecipeButton(response)}</div>`;
     const type = herb ? '🌿 Bylina' : '🥗 Jídlo';
     saveToHistory('jidlo-lookup', '🥗', `${type}: ${query}`, query, response);
     document.getElementById('jidlo-text').value = '';
@@ -506,7 +762,7 @@ async function doCombineCheck() {
   try {
     const taskPrompt = buildCombineCheckPrompt(items, Storage.getProfile());
     const response = await callAI(items.join(' + '), taskPrompt);
-    output.innerHTML = `<div class="card">${renderMarkdown(response)}</div>`;
+    output.innerHTML = `<div class="card">${renderMarkdown(response)}${makeSaveRecipeButton(response)}</div>`;
     saveToHistory('jidlo-combine', '🥣', `Kombinace: ${items.join(', ')}`, items.join(' + '), response);
     document.getElementById('jidlo-text').value = '';
   } catch (e) {
@@ -624,6 +880,7 @@ async function runShortcut(id, isCustom) {
           <span class="card-date">${new Date().toLocaleString('cs-CZ', { dateStyle: 'short', timeStyle: 'short' })}</span>
         </div>
         ${renderMarkdown(response)}
+        ${makeSaveRecipeButton(response)}
       </div>
     `;
     saveToHistory('zkratka', shortcut.icon || '⚡', shortcut.title, finalPrompt, response);
@@ -772,6 +1029,146 @@ function clearHistoryAll() {
 }
 
 // ============================================================
+// Recepty
+// ============================================================
+let pendingRecipeContent = null; // text čekající na uložení do modalu
+
+function setupRecepty() {
+  document.getElementById('recepty-hledat').addEventListener('input', renderRecepty);
+}
+
+function setupRecipeModal() {
+  document.getElementById('btn-cancel-recipe').addEventListener('click', closeSaveRecipeModal);
+  document.getElementById('btn-confirm-recipe').addEventListener('click', confirmSaveRecipe);
+}
+
+function openSaveRecipeModal(content) {
+  pendingRecipeContent = content;
+  document.getElementById('recipe-name').value = '';
+  document.getElementById('recipe-purpose').value = '';
+  document.getElementById('recipe-tags').value = '';
+  document.getElementById('recipe-preview').innerHTML = renderMarkdown(content.slice(0, 3000));
+  document.getElementById('modal-save-recipe').classList.add('active');
+  setTimeout(() => document.getElementById('recipe-name').focus(), 50);
+}
+
+function closeSaveRecipeModal() {
+  document.getElementById('modal-save-recipe').classList.remove('active');
+  pendingRecipeContent = null;
+}
+
+function confirmSaveRecipe() {
+  const name = document.getElementById('recipe-name').value.trim();
+  const purpose = document.getElementById('recipe-purpose').value.trim();
+  const tagsRaw = document.getElementById('recipe-tags').value.trim();
+  if (!name) {
+    alert('Zadej název receptu.');
+    return;
+  }
+  if (!purpose) {
+    alert('Napiš, na co ti recept pomůže.');
+    return;
+  }
+  if (!pendingRecipeContent) {
+    alert('Chybí obsah receptu.');
+    return;
+  }
+  const tags = tagsRaw
+    ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean)
+    : [];
+  const recipe = {
+    id: 'recipe-' + Date.now(),
+    createdAt: new Date().toISOString(),
+    name,
+    purpose,
+    tags,
+    content: pendingRecipeContent
+  };
+  Storage.saveRecipe(recipe);
+  closeSaveRecipeModal();
+  renderRecepty();
+  // Krátká vizuální notifikace
+  showToast(`✓ Recept "${name}" uložen do 📖 Recepty`);
+}
+
+function renderRecepty() {
+  const container = document.getElementById('recepty-list');
+  const query = (document.getElementById('recepty-hledat')?.value || '').trim();
+  let recipes = Storage.getRecipes();
+
+  if (query) {
+    recipes = recipes.filter(r =>
+      matchesSearch(r.name, query) ||
+      matchesSearch(r.purpose, query) ||
+      matchesSearch(r.content, query) ||
+      matchesSearch((r.tags || []).join(' '), query)
+    );
+  }
+
+  if (recipes.length === 0) {
+    container.innerHTML = `<div class="empty">
+      <div class="empty-icon">📖</div>
+      <p>${query
+        ? 'Nic nenalezeno.'
+        : 'Zatím žádné recepty. Až ti AI navrhne nějaký (postup, rituál, nápoj, snídani...), klikni pod odpovědí <strong>💾 Uložit jako recept</strong>.'}</p>
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = recipes.map(r => {
+    const d = new Date(r.createdAt);
+    const dateStr = d.toLocaleDateString('cs-CZ');
+    const tagsHtml = (r.tags || []).map(t => `<span class="tag tag-fact">${escapeHtml(t)}</span>`).join(' ');
+    return `
+      <details class="card" style="margin-bottom:.5rem;">
+        <summary style="cursor:pointer;list-style:none;">
+          <div class="card-header" style="margin:0;">
+            <span>
+              <strong>📖 ${escapeHtml(r.name)}</strong>
+              <div class="small muted" style="margin-top:.15rem;">🎯 ${escapeHtml(r.purpose)}</div>
+            </span>
+            <span class="card-date">${dateStr}</span>
+          </div>
+          ${tagsHtml ? `<div style="margin-top:.4rem;">${tagsHtml}</div>` : ''}
+        </summary>
+        <div style="margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border);">
+          ${renderMarkdown(r.content)}
+          <div class="flex flex-end mt-1">
+            <button class="btn btn-secondary small" data-recipe-del="${escapeHtml(r.id)}" style="font-size:.85rem;">🗑 Smazat</button>
+          </div>
+        </div>
+      </details>
+    `;
+  }).join('');
+
+  container.querySelectorAll('[data-recipe-del]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirm('Smazat tento recept?')) {
+        Storage.deleteRecipe(btn.dataset.recipeDel);
+        renderRecepty();
+      }
+    });
+  });
+}
+
+// Malý toast na horní okraj obrazovky
+function showToast(msg) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;top:1rem;left:50%;transform:translateX(-50%);background:var(--accent);color:white;padding:.75rem 1.25rem;border-radius:var(--radius-sm);box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:200;font-size:.9rem;transition:opacity .3s;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+}
+
+// ============================================================
 // Profil
 // ============================================================
 function setupProfil() {
@@ -779,6 +1176,76 @@ function setupProfil() {
   document.getElementById('btn-cancel-profile').addEventListener('click', closeProfileEditor);
   document.getElementById('btn-save-profile').addEventListener('click', saveProfileFromEditor);
   document.getElementById('btn-export').addEventListener('click', exportData);
+  document.getElementById('btn-review-update').addEventListener('click', runReviewUpdate);
+}
+
+async function runReviewUpdate() {
+  const entries = Storage.getEntries();
+  const btn = document.getElementById('btn-review-update');
+  const output = document.getElementById('review-output');
+
+  if (entries.length < 3) {
+    output.innerHTML = `<div class="disclaimer">Máš zatím jen ${entries.length} záznam(ů) v deníku. Pro smysluplný review doporučuji aspoň 3–5 záznamů za posledních pár dní. Piš pravidelně a vrať se k tomuto za pár týdnů.</div>`;
+    return;
+  }
+
+  output.innerHTML = '<div class="loading">Procházím tvůj deník a hledám vzorce</div>';
+  btn.disabled = true;
+  updateBackButton();
+
+  try {
+    const profile = Storage.getProfile();
+    const journalSummary = entries.slice(0, 30).map((e, i) => {
+      const d = new Date(e.date).toLocaleDateString('cs-CZ');
+      return `[${d}] Nálada: ${e.nalada || '-'} | Jídlo: ${e.jidlo || '-'} | Příznaky: ${e.priznaky || '-'}`;
+    }).join('\n');
+
+    const reviewPrompt = `Zanalyzuj Zuzanin deník a navrhni, co v profilu aktualizovat.
+
+# Poslední záznamy (nejnovější první):
+${journalSummary}
+
+# Úkol
+Projdi záznamy a hledej:
+1. **Nové příznaky** — které se opakují a nejsou v profilu
+2. **Zmizelé příznaky** — které byly v profilu ale v deníku o nich nic není (možná se zlepšily)
+3. **Změna vzorce** — posun z Kapha → Vata, z horka → chlad, ze stagnace → prázdnoty apod.
+4. **Nová jídla / doplňky** — pravidelně se opakující nebo naopak vynechaná
+5. **Emocní vzorce** — co se opakuje mentálně/emočně
+
+# Formát odpovědi
+
+Pro každý poznatek napiš:
+
+**📌 [Typ změny]:** [Konkrétní popis]
+**Evidence z deníku:** [citace ze záznamu s datem]
+**Návrh na profil:** [co konkrétně přidat / odstranit / změnit]
+**Jistota:** vysoká / střední / nízká
+
+Pokud v deníku nic zásadního není, čestně to řekni.
+
+Nekonči obecnými radami. Cílem je konkrétní údržba profilu, ne nová terapie.`;
+
+    const response = await callAI('', reviewPrompt);
+    output.innerHTML = `
+      <div class="card mt-1">
+        <div class="card-header">
+          <strong>🔄 Review & Update ${new Date().toLocaleDateString('cs-CZ')}</strong>
+        </div>
+        ${renderMarkdown(response)}
+        ${makeSaveRecipeButton(response)}
+        <div class="mt-2">
+          <p class="small muted">💡 Pro aplikování změn klikni na <strong>"Upravit profil (JSON)"</strong> dole a přidej/uprav ručně to, s čím souhlasíš. Nikdy nic nepřevádíme automaticky bez tvého souhlasu.</p>
+        </div>
+      </div>
+    `;
+    saveToHistory('review', '🔄', `Review profilu (${new Date().toLocaleDateString('cs-CZ')})`, 'Review profilu podle deníku', response);
+  } catch (e) {
+    output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+    updateBackButton();
+  }
 }
 
 function renderProfile() {
