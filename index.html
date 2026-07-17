@@ -25,6 +25,7 @@
     <button data-tab="otazka">💭 Otázka</button>
     <button data-tab="jidlo">🥗 Jídlo</button>
     <button data-tab="zkratky">⚡ Zkratky</button>
+    <button data-tab="historie">📚 Historie</button>
     <button data-tab="profil">👤 Profil</button>
   </nav>
 
@@ -129,6 +130,22 @@
       </details>
 
       <div id="zkratky-output" class="mt-2"></div>
+    </section>
+
+    <!-- ============ HISTORIE ============ -->
+    <section id="tab-historie" class="tab-panel">
+      <h2>Historie</h2>
+      <p class="subtitle">Všechny odpovědi AI se zde ukládají. Klikni na položku pro rozbalení.</p>
+
+      <div class="form-row">
+        <input type="text" id="historie-hledat" placeholder="🔍 Hledej v historii (např. „migréna", „ženšen")">
+      </div>
+
+      <div id="historie-list"></div>
+
+      <div class="mt-2 flex flex-end">
+        <button class="btn btn-secondary small" id="btn-clear-historie" style="font-size:.85rem;">🗑 Smazat vše</button>
+      </div>
     </section>
 
     <!-- ============ PROFIL ============ -->

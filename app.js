@@ -28,11 +28,32 @@ function init() {
   setupOtazka();
   setupJidlo();
   setupZkratky();
+  setupHistorie();
   setupProfil();
   initFirstRun();
   renderEntries();
   renderProfile();
   renderShortcuts();
+  renderHistorie();
+}
+
+// ============================================================
+// History helper — save every AI response
+// ============================================================
+function saveToHistory(type, icon, title, prompt, response) {
+  Storage.addHistoryEntry({
+    id: Date.now().toString(),
+    timestamp: new Date().toISOString(),
+    type,
+    icon,
+    title,
+    prompt,
+    response
+  });
+  // Re-render if user is viewing Historie tab
+  if (document.getElementById('tab-historie').classList.contains('active')) {
+    renderHistorie();
+  }
 }
 
 // ============================================================
@@ -287,6 +308,7 @@ async function runAnalysis() {
     const taskPrompt = buildAnalyzePrompt(text);
     const response = await callAI(text, taskPrompt);
     output.innerHTML = `<div class="card">${renderMarkdown(response)}</div>`;
+    saveToHistory('otazka', '💭', text.slice(0, 80), text, response);
   } catch (e) {
     output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
   } finally {
@@ -348,6 +370,8 @@ async function doLookup() {
     }
 
     output.innerHTML = `${dbInfo}<div class="card">${renderMarkdown(response)}</div>`;
+    const type = herb ? '🌿 Bylina' : '🥗 Jídlo';
+    saveToHistory('jidlo-lookup', '🥗', `${type}: ${query}`, query, response);
   } catch (e) {
     output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
   } finally {
@@ -376,6 +400,7 @@ async function doCombineCheck() {
     const taskPrompt = buildCombineCheckPrompt(items, Storage.getProfile());
     const response = await callAI(items.join(' + '), taskPrompt);
     output.innerHTML = `<div class="card">${renderMarkdown(response)}</div>`;
+    saveToHistory('jidlo-combine', '🥣', `Kombinace: ${items.join(', ')}`, items.join(' + '), response);
   } catch (e) {
     output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
   } finally {
@@ -452,13 +477,38 @@ async function runShortcut(id, isCustom) {
     return;
   }
 
+  // Detect placeholders like [ZDE POPIŠ SVOU KOMBINACI] or [ZDE POPIŠ]
+  // and ask user for input before running.
+  let finalPrompt = shortcut.prompt;
+  const placeholderPattern = /\[([^\]]{3,})\]/g;
+  const matches = [...shortcut.prompt.matchAll(placeholderPattern)];
+
+  if (matches.length > 0) {
+    for (const match of matches) {
+      const fullPlaceholder = match[0];
+      const label = match[1];
+      const userInput = window.prompt(
+        `${shortcut.title}\n\n${label}\n\n(Napiš text a klikni OK):`,
+        ''
+      );
+      if (userInput === null) {
+        return; // user cancelled
+      }
+      if (!userInput.trim()) {
+        alert('Nezadal(a) jsi žádný text. Zkratka nespuštěna.');
+        return;
+      }
+      finalPrompt = finalPrompt.replace(fullPlaceholder, userInput.trim());
+    }
+  }
+
   const output = document.getElementById('zkratky-output');
   output.innerHTML = `<div class="card"><div class="loading">Zpracovávám "${escapeHtml(shortcut.title)}"</div></div>`;
   output.scrollIntoView({ behavior: 'smooth', block: 'start' });
   updateBackButton();
 
   try {
-    const response = await callAI(shortcut.prompt);
+    const response = await callAI(finalPrompt);
     output.innerHTML = `
       <div class="card">
         <div class="card-header">
@@ -468,6 +518,7 @@ async function runShortcut(id, isCustom) {
         ${renderMarkdown(response)}
       </div>
     `;
+    saveToHistory('zkratka', shortcut.icon || '⚡', shortcut.title, finalPrompt, response);
   } catch (e) {
     output.innerHTML = `<div class="disclaimer"><strong>Chyba:</strong> ${escapeHtml(e.message)}</div>`;
   } finally {
@@ -509,6 +560,82 @@ function saveCustomShortcut() {
 
   renderShortcuts();
   alert('Zkratka uložena. ✓');
+}
+
+// ============================================================
+// Historie
+// ============================================================
+function setupHistorie() {
+  document.getElementById('btn-clear-historie').addEventListener('click', clearHistoryAll);
+  document.getElementById('historie-hledat').addEventListener('input', renderHistorie);
+}
+
+function renderHistorie() {
+  const container = document.getElementById('historie-list');
+  const query = (document.getElementById('historie-hledat').value || '').toLowerCase().trim();
+
+  let entries = Storage.getHistory();
+
+  if (query) {
+    entries = entries.filter(e =>
+      (e.title || '').toLowerCase().includes(query) ||
+      (e.prompt || '').toLowerCase().includes(query) ||
+      (e.response || '').toLowerCase().includes(query)
+    );
+  }
+
+  if (entries.length === 0) {
+    container.innerHTML = `<div class="empty">
+      <div class="empty-icon">📚</div>
+      <p>${query ? 'Nic nenalezeno.' : 'Zatím tu nic není. Až se zeptáš na Otázku, Jídlo nebo klikneš na Zkratku, odpověď se sem uloží.'}</p>
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = entries.map(e => {
+    const d = new Date(e.timestamp);
+    const dateStr = d.toLocaleString('cs-CZ', { dateStyle: 'medium', timeStyle: 'short' });
+    return `
+      <details class="card history-item" style="margin-bottom:.5rem;">
+        <summary style="cursor:pointer;list-style:none;">
+          <div class="card-header" style="margin:0;">
+            <span><strong>${escapeHtml(e.icon || '⚡')} ${escapeHtml(e.title)}</strong></span>
+            <span class="card-date">${dateStr}</span>
+          </div>
+        </summary>
+        <div style="margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border);">
+          <p class="small muted mb-1"><strong>Dotaz:</strong> ${escapeHtml(e.prompt.slice(0, 300))}${e.prompt.length > 300 ? '…' : ''}</p>
+          <div style="margin-top:.5rem;">${renderMarkdown(e.response)}</div>
+          <div class="flex flex-end mt-1">
+            <button class="btn btn-secondary small" data-hist-del="${escapeHtml(e.id)}" style="font-size:.85rem;">🗑 Smazat záznam</button>
+          </div>
+        </div>
+      </details>
+    `;
+  }).join('');
+
+  container.querySelectorAll('[data-hist-del]').forEach(btn => {
+    btn.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const id = btn.dataset.histDel;
+      if (confirm('Smazat tento záznam z historie?')) {
+        Storage.deleteHistoryEntry(id);
+        renderHistorie();
+      }
+    });
+  });
+}
+
+function clearHistoryAll() {
+  if (Storage.getHistory().length === 0) {
+    alert('Historie je už prázdná.');
+    return;
+  }
+  if (confirm('Opravdu smazat CELOU historii? Toto nelze vrátit zpět.')) {
+    Storage.clearHistory();
+    renderHistorie();
+  }
 }
 
 // ============================================================
