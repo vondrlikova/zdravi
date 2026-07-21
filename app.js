@@ -28,6 +28,10 @@ let pendingImage = null; // {data: base64 (bez prefixu), mimeType: string, dataU
 const responsesForSaving = new Map();
 let responseIdCounter = 0;
 
+// Sync (Supabase) — inicializuje se v init()
+let syncClient = null;
+let syncManager = null;
+
 function registerResponseForSaving(text) {
   const id = 'resp-' + (++responseIdCounter);
   responsesForSaving.set(id, text);
@@ -56,12 +60,192 @@ function init() {
   setupProfil();
   setupRecipeModal();
   setupSaveRecipeDelegation();
+  setupSync();
   initFirstRun();
   renderEntries();
   renderProfile();
   renderShortcuts();
   renderHistorie();
   renderRecepty();
+  // Sync na startu — pokud je nastavené, stáhne data z cloudu
+  bootstrapSync();
+}
+
+// ============================================================
+// Sync (Supabase) — synchronizace mezi zařízeními
+// ============================================================
+function setupSync() {
+  document.getElementById('btn-generate-userid').addEventListener('click', generateSyncUserId);
+  document.getElementById('btn-test-sync').addEventListener('click', testSyncConnection);
+  document.getElementById('btn-pull-now').addEventListener('click', pullFromCloudManual);
+  document.getElementById('btn-push-now').addEventListener('click', pushToCloudManual);
+
+  // Nastavit callback ze Storage, aby se posílalo do cloudu při každé změně
+  Storage.setSyncCallback((key, value) => {
+    if (syncManager && syncClient?.enabled) {
+      syncManager.schedule(key, value);
+    }
+  });
+}
+
+function generateSyncUserId() {
+  const id = 'zuzana-' + (crypto.randomUUID?.() || (Math.random().toString(36).slice(2) + Date.now().toString(36))).slice(0, 12);
+  document.getElementById('sync-userid').value = id;
+  showSyncMessage(`Vygenerován ID: ${id}. Zkopíruj si ho, budeš ho potřebovat na druhém zařízení.`, 'info');
+}
+
+function initSyncClient(config) {
+  syncClient = new SupabaseSync(config);
+  syncManager = new SyncManager(syncClient);
+  syncClient.onChange(updateSyncStatusIndicator);
+}
+
+function updateSyncStatusIndicator(sync) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  if (!sync.enabled) {
+    el.textContent = '';
+    el.title = 'Sync není nastavený';
+    return;
+  }
+  switch (sync.status) {
+    case 'syncing':
+      el.textContent = '⏳';
+      el.title = 'Synchronizuji…';
+      break;
+    case 'success':
+      el.textContent = '☁️';
+      el.title = `Synchronizováno ${sync.lastSync ? sync.lastSync.toLocaleTimeString('cs-CZ') : ''}`;
+      break;
+    case 'error':
+      el.textContent = '⚠️';
+      el.title = `Chyba synchronizace: ${sync.lastError || 'neznámá'}`;
+      break;
+    default:
+      el.textContent = '☁';
+      el.title = 'Sync připraven';
+  }
+}
+
+async function bootstrapSync() {
+  const cfg = Storage.getSyncConfig();
+  if (!cfg?.url || !cfg?.apiKey || !cfg?.userId) return;
+
+  initSyncClient(cfg);
+  if (!syncClient.enabled) return;
+
+  // Pull z cloudu na startu — pokud jsou tam data, přepíšou lokální
+  try {
+    syncClient._setStatus('syncing');
+    const cloud = await syncClient.pullAll();
+    let pulledAny = false;
+    for (const [key, value] of Object.entries(cloud)) {
+      if (Storage.isSyncKey(key) && value != null) {
+        Storage.setLocal(key, value);
+        pulledAny = true;
+      }
+    }
+    syncClient._setStatus('success');
+    // Pokud jsme něco stáhli, přerender všechno co je viditelné
+    if (pulledAny) {
+      renderEntries();
+      renderProfile();
+      renderShortcuts();
+      renderHistorie();
+      renderRecepty();
+    }
+  } catch (e) {
+    console.error('Sync pull failed:', e);
+    syncClient._setStatus('error', e.message);
+  }
+}
+
+async function testSyncConnection() {
+  const cfg = collectSyncFormValues();
+  if (!cfg.url || !cfg.apiKey) {
+    showSyncMessage('Vyplň URL a klíč.', 'error');
+    return;
+  }
+  const testClient = new SupabaseSync(cfg);
+  showSyncMessage('Testuji spojení…', 'info');
+  const ok = await testClient.ping();
+  if (ok) {
+    showSyncMessage('✅ Spojení funguje! Klikni "Uložit" v nastavení.', 'success');
+  } else {
+    showSyncMessage(`❌ Nepodařilo se spojit: ${testClient.lastError || 'zkontroluj URL a klíč'}`, 'error');
+  }
+}
+
+async function pullFromCloudManual() {
+  if (!syncClient?.enabled) {
+    showSyncMessage('Nejdřív ulož nastavení sync (klikni Uložit dole).', 'error');
+    return;
+  }
+  if (!confirm('Stáhnout data z cloudu? Přepíše to tvá lokální data. Ujisti se, že chceš to.')) return;
+
+  showSyncMessage('Stahuji z cloudu…', 'info');
+  try {
+    syncClient._setStatus('syncing');
+    const cloud = await syncClient.pullAll();
+    for (const [key, value] of Object.entries(cloud)) {
+      if (Storage.isSyncKey(key) && value != null) {
+        Storage.setLocal(key, value);
+      }
+    }
+    syncClient._setStatus('success');
+    renderEntries();
+    renderProfile();
+    renderShortcuts();
+    renderHistorie();
+    renderRecepty();
+    showSyncMessage(`✅ Staženo ${Object.keys(cloud).length} typů dat z cloudu.`, 'success');
+  } catch (e) {
+    syncClient._setStatus('error', e.message);
+    showSyncMessage(`❌ Stahování selhalo: ${e.message}`, 'error');
+  }
+}
+
+async function pushToCloudManual() {
+  if (!syncClient?.enabled) {
+    showSyncMessage('Nejdřív ulož nastavení sync (klikni Uložit dole).', 'error');
+    return;
+  }
+  showSyncMessage('Nahrávám do cloudu…', 'info');
+  try {
+    syncClient._setStatus('syncing');
+    const keys = ['profile', 'entries', 'recipes', 'conversations', 'customShortcuts', 'history'];
+    for (const key of keys) {
+      const data = Storage.get(key);
+      if (data != null) {
+        await syncClient.push(key, data);
+      }
+    }
+    syncClient._setStatus('success');
+    showSyncMessage('✅ Data nahrána do cloudu.', 'success');
+  } catch (e) {
+    syncClient._setStatus('error', e.message);
+    showSyncMessage(`❌ Nahrávání selhalo: ${e.message}`, 'error');
+  }
+}
+
+function collectSyncFormValues() {
+  return {
+    url: document.getElementById('sync-url').value.trim(),
+    apiKey: document.getElementById('sync-key').value.trim(),
+    userId: document.getElementById('sync-userid').value.trim()
+  };
+}
+
+function showSyncMessage(msg, type = 'info') {
+  const el = document.getElementById('sync-message');
+  if (!el) return;
+  const colors = {
+    info: 'var(--text-soft)',
+    success: 'var(--accent-deep)',
+    error: 'var(--danger)'
+  };
+  el.style.color = colors[type] || colors.info;
+  el.textContent = msg;
 }
 
 // Delegace kliknutí na "💾 Uložit jako recept" tlačítka
@@ -187,6 +371,12 @@ function setupSettings() {
 function openSettings() {
   document.getElementById('api-key').value = Storage.getApiKey() || '';
   document.getElementById('api-model').value = Storage.getModel();
+  // Sync config
+  const cfg = Storage.getSyncConfig();
+  document.getElementById('sync-url').value = cfg.url || '';
+  document.getElementById('sync-key').value = cfg.apiKey || '';
+  document.getElementById('sync-userid').value = cfg.userId || '';
+  showSyncMessage('', 'info');
   document.getElementById('modal-settings').classList.add('active');
 }
 
@@ -194,7 +384,7 @@ function closeSettings() {
   document.getElementById('modal-settings').classList.remove('active');
 }
 
-function saveSettings() {
+async function saveSettings() {
   const key = document.getElementById('api-key').value.trim();
   const model = document.getElementById('api-model').value;
   if (!key) {
@@ -203,6 +393,40 @@ function saveSettings() {
   }
   Storage.setApiKey(key);
   Storage.setModel(model);
+
+  // Sync config
+  const syncCfg = collectSyncFormValues();
+  const hadSync = syncClient?.enabled;
+  Storage.setSyncConfig(syncCfg);
+
+  // Reinitializovat sync klienta s novou konfigurací
+  if (syncCfg.url && syncCfg.apiKey && syncCfg.userId) {
+    initSyncClient(syncCfg);
+    // Pokud sync JE PRVNĚ zapínán, nahraj lokální data do cloudu.
+    // Pokud už byl aktivní, na startu bootstrapSync stahoval — teď se nic dělat nemusí.
+    if (!hadSync) {
+      showSyncMessage('Nahrávám lokální data do cloudu poprvé…', 'info');
+      try {
+        const keys = ['profile', 'entries', 'recipes', 'conversations', 'customShortcuts', 'history'];
+        syncClient._setStatus('syncing');
+        for (const k of keys) {
+          const data = Storage.get(k);
+          if (data != null) {
+            await syncClient.push(k, data);
+          }
+        }
+        syncClient._setStatus('success');
+      } catch (e) {
+        syncClient._setStatus('error', e.message);
+      }
+    }
+  } else {
+    // Sync vypnutý (údaje chybí)
+    syncClient = null;
+    syncManager = null;
+    updateSyncStatusIndicator({ enabled: false, status: 'disabled' });
+  }
+
   closeSettings();
 }
 

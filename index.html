@@ -17,7 +17,10 @@
   <header>
     <button class="icon-btn" id="btn-back" title="Zpět / Vyčistit" style="visibility:hidden;">←</button>
     <h1>🌿 Zdravotní průvodce</h1>
-    <button class="icon-btn" id="btn-settings" title="Nastavení">⚙️</button>
+    <div style="display:flex;align-items:center;gap:.25rem;">
+      <span id="sync-status" title="Stav synchronizace" style="font-size:.9rem;" aria-hidden="true"></span>
+      <button class="icon-btn" id="btn-settings" title="Nastavení">⚙️</button>
+    </div>
   </header>
 
   <nav class="tabs">
@@ -269,6 +272,40 @@
         <strong>⚠️ Upozornění:</strong> Tato aplikace není náhrada lékaře. U vážných příznaků (silné migrény, abnormální menstruace) konzultuj lékaře.
       </div>
 
+      <details style="margin-top:1rem;">
+        <summary style="cursor:pointer;font-weight:600;color:var(--accent-deep);padding:.5rem 0;">☁️ Synchronizace mezi zařízeními (Supabase)</summary>
+        <div style="padding-top:.5rem;">
+          <p class="small muted">Zapni sync, aby se tvá data přenášela mezi PC a iPhonem. Vyžaduje Supabase účet (zdarma).</p>
+
+          <div class="form-row">
+            <label for="sync-url">Supabase Project URL</label>
+            <input type="text" id="sync-url" placeholder="https://xxx.supabase.co">
+          </div>
+
+          <div class="form-row">
+            <label for="sync-key">Publishable / anon key</label>
+            <input type="password" id="sync-key" placeholder="sb_publishable_... nebo eyJ...">
+          </div>
+
+          <div class="form-row">
+            <label for="sync-userid">Sync ID (stejné na všech tvých zařízeních!)</label>
+            <div class="flex" style="gap:.4rem;">
+              <input type="text" id="sync-userid" placeholder="např. zuzana-2026" style="flex:1;">
+              <button type="button" class="btn btn-secondary small" id="btn-generate-userid" style="font-size:.8rem;padding:.4rem .6rem;">Vygenerovat</button>
+            </div>
+            <p class="small muted mt-1">Tip: Na prvním zařízení klikni "Vygenerovat" a zkopíruj si výsledek. Na druhém zařízení zadej stejný ID, aby se propojila.</p>
+          </div>
+
+          <div class="flex mt-1" style="gap:.5rem;flex-wrap:wrap;">
+            <button type="button" class="btn btn-secondary small" id="btn-test-sync">🔌 Otestovat spojení</button>
+            <button type="button" class="btn btn-secondary small" id="btn-pull-now">⬇ Stáhnout z cloudu</button>
+            <button type="button" class="btn btn-secondary small" id="btn-push-now">⬆ Nahrát do cloudu</button>
+          </div>
+
+          <div id="sync-message" class="small mt-1"></div>
+        </div>
+      </details>
+
       <div class="modal-actions">
         <button class="btn btn-secondary" id="btn-cancel-settings">Zrušit</button>
         <button class="btn" id="btn-save-settings">Uložit</button>
@@ -292,6 +329,7 @@
   <script src="data-bundle.js"></script>
   <script src="lib/storage.js"></script>
   <script src="lib/gemini.js"></script>
+  <script src="lib/sync.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
