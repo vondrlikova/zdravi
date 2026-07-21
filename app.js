@@ -402,22 +402,46 @@ async function saveSettings() {
   // Reinitializovat sync klienta s novou konfigurací
   if (syncCfg.url && syncCfg.apiKey && syncCfg.userId) {
     initSyncClient(syncCfg);
-    // Pokud sync JE PRVNĚ zapínán, nahraj lokální data do cloudu.
-    // Pokud už byl aktivní, na startu bootstrapSync stahoval — teď se nic dělat nemusí.
+    // Pokud sync JE PRVNĚ zapínán:
+    // - Zkontrolovat cloud
+    // - Pokud cloud MÁ data → stáhnout je (druhé zařízení)
+    // - Pokud cloud NEMÁ data → nahrát lokální (první zařízení)
     if (!hadSync) {
-      showSyncMessage('Nahrávám lokální data do cloudu poprvé…', 'info');
       try {
-        const keys = ['profile', 'entries', 'recipes', 'conversations', 'customShortcuts', 'history'];
         syncClient._setStatus('syncing');
-        for (const k of keys) {
-          const data = Storage.get(k);
-          if (data != null) {
-            await syncClient.push(k, data);
+        const cloud = await syncClient.pullAll();
+        const cloudKeys = Object.keys(cloud);
+
+        if (cloudKeys.length > 0) {
+          // Cloud má data — použij je (druhé zařízení)
+          for (const [key, value] of Object.entries(cloud)) {
+            if (Storage.isSyncKey(key) && value != null) {
+              Storage.setLocal(key, value);
+            }
           }
+          syncClient._setStatus('success');
+          // Přerender všechno
+          renderEntries();
+          renderProfile();
+          renderShortcuts();
+          renderHistorie();
+          renderRecepty();
+          alert(`✅ Toto zařízení bylo propojeno s cloudem. Stažena data (${cloudKeys.length} typů) — lokální data byla přepsána cloudovými.`);
+        } else {
+          // Cloud je prázdný — nahraj lokální (první zařízení)
+          const keys = ['profile', 'entries', 'recipes', 'conversations', 'customShortcuts', 'history'];
+          for (const k of keys) {
+            const data = Storage.get(k);
+            if (data != null) {
+              await syncClient.push(k, data);
+            }
+          }
+          syncClient._setStatus('success');
+          alert('✅ Sync zapnutý. Cloud byl prázdný, nahrála jsem tvá lokální data. Na dalším zařízení použij stejné údaje (URL, klíč, Sync ID) — automaticky se stáhne, co teď posílám.');
         }
-        syncClient._setStatus('success');
       } catch (e) {
         syncClient._setStatus('error', e.message);
+        alert(`Sync se nepodařilo spustit: ${e.message}`);
       }
     }
   } else {
