@@ -396,56 +396,58 @@ async function saveSettings() {
 
   // Sync config
   const syncCfg = collectSyncFormValues();
-  const hadSync = syncClient?.enabled;
   Storage.setSyncConfig(syncCfg);
 
-  // Reinitializovat sync klienta s novou konfigurací
   if (syncCfg.url && syncCfg.apiKey && syncCfg.userId) {
     initSyncClient(syncCfg);
-    // Pokud sync JE PRVNĚ zapínán:
-    // - Zkontrolovat cloud
-    // - Pokud cloud MÁ data → stáhnout je (druhé zařízení)
-    // - Pokud cloud NEMÁ data → nahrát lokální (první zařízení)
-    if (!hadSync) {
-      try {
-        syncClient._setStatus('syncing');
-        const cloud = await syncClient.pullAll();
-        const cloudKeys = Object.keys(cloud);
+    // Každé Uložit provede skutečný sync:
+    // - Nejdřív se zeptej cloudu, co tam je
+    // - Cloud MÁ data → stáhni (druhé zařízení nebo obnovení)
+    // - Cloud NEMÁ data → nahraj lokální (první zařízení)
+    try {
+      syncClient._setStatus('syncing');
+      const cloud = await syncClient.pullAll();
+      const cloudKeys = Object.keys(cloud).filter(k => cloud[k] != null);
 
-        if (cloudKeys.length > 0) {
-          // Cloud má data — použij je (druhé zařízení)
-          for (const [key, value] of Object.entries(cloud)) {
-            if (Storage.isSyncKey(key) && value != null) {
-              Storage.setLocal(key, value);
-            }
+      if (cloudKeys.length > 0) {
+        for (const key of cloudKeys) {
+          if (Storage.isSyncKey(key)) {
+            Storage.setLocal(key, cloud[key]);
           }
-          syncClient._setStatus('success');
-          // Přerender všechno
-          renderEntries();
-          renderProfile();
-          renderShortcuts();
-          renderHistorie();
-          renderRecepty();
-          alert(`✅ Toto zařízení bylo propojeno s cloudem. Stažena data (${cloudKeys.length} typů) — lokální data byla přepsána cloudovými.`);
-        } else {
-          // Cloud je prázdný — nahraj lokální (první zařízení)
-          const keys = ['profile', 'entries', 'recipes', 'conversations', 'customShortcuts', 'history'];
-          for (const k of keys) {
-            const data = Storage.get(k);
-            if (data != null) {
-              await syncClient.push(k, data);
-            }
-          }
-          syncClient._setStatus('success');
-          alert('✅ Sync zapnutý. Cloud byl prázdný, nahrála jsem tvá lokální data. Na dalším zařízení použij stejné údaje (URL, klíč, Sync ID) — automaticky se stáhne, co teď posílám.');
         }
-      } catch (e) {
-        syncClient._setStatus('error', e.message);
-        alert(`Sync se nepodařilo spustit: ${e.message}`);
+        renderEntries();
+        renderProfile();
+        renderShortcuts();
+        renderHistorie();
+        renderRecepty();
+        syncClient._setStatus('success');
+        alert(`✅ Sync aktivní. Cloud měl data (${cloudKeys.length} typů), stáhla jsem je do tohoto zařízení.`);
+      } else {
+        const keys = ['profile', 'entries', 'recipes', 'conversations', 'customShortcuts', 'history'];
+        let pushedAny = false;
+        for (const k of keys) {
+          const data = Storage.get(k);
+          const hasContent = data != null && (
+            (Array.isArray(data) && data.length > 0) ||
+            (typeof data === 'object' && Object.keys(data).length > 0)
+          );
+          if (hasContent) {
+            await syncClient.push(k, data);
+            pushedAny = true;
+          }
+        }
+        syncClient._setStatus('success');
+        if (pushedAny) {
+          alert('✅ Sync aktivní. Cloud byl prázdný, nahrála jsem tvá lokální data. Na dalším zařízení použij stejné údaje — automaticky se stáhne.');
+        } else {
+          alert('✅ Sync aktivní. Cloud i lokál jsou prozatím prázdné — synchronizace poběží až od prvních zápisů.');
+        }
       }
+    } catch (e) {
+      syncClient._setStatus('error', e.message);
+      alert(`Sync se nepodařilo spustit: ${e.message}`);
     }
   } else {
-    // Sync vypnutý (údaje chybí)
     syncClient = null;
     syncManager = null;
     updateSyncStatusIndicator({ enabled: false, status: 'disabled' });
