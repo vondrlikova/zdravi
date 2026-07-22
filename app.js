@@ -466,11 +466,11 @@ async function callAI(userPrompt, taskPrompt = null) {
     throw new Error('Zadej nejdřív API klíč v nastavení.');
   }
   const client = new GeminiClient(apiKey, Storage.getModel());
-  const profile = Storage.getProfile();
-  const entries = Storage.getEntries();
   const systemPrompt = buildSystemPrompt({
-    profile,
-    recentEntries: entries,
+    profile: Storage.getProfile(),
+    recentEntries: Storage.getEntries(),
+    recipes: Storage.getRecipes(),
+    historyItems: Storage.getHistory(),
     foodsDb,
     herbsDb
   });
@@ -478,7 +478,14 @@ async function callAI(userPrompt, taskPrompt = null) {
   const text = await client.generate(
     [{ role: 'user', text: fullUserPrompt }],
     systemPrompt,
-    { temperature: 0.55, maxOutputTokens: 4096 }
+    {
+      temperature: 0.55,
+      maxOutputTokens: 4096,
+      onRetry: (attempt, total) => {
+        // Volitelně: informuj uživatele o pokusu (přes globální notifikaci)
+        console.log(`Retry ${attempt}/${total} po chybě spojení nebo přetížení`);
+      }
+    }
   );
   return text;
 }
@@ -853,6 +860,8 @@ async function runAnalysis(mode) {
     const systemPrompt = buildSystemPrompt({
       profile: Storage.getProfile(),
       recentEntries: Storage.getEntries(),
+      recipes: Storage.getRecipes(),
+      historyItems: Storage.getHistory(),
       foodsDb,
       herbsDb
     });
